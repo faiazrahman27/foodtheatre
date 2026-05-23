@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
+import { cn } from "@/lib/utils";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -236,24 +237,47 @@ const characterDetails = [
   }
 ] as const;
 
-const pageVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08
-    }
-  }
+type FloatingImageProps = {
+  src: string;
+  alt: string;
+  className: string;
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.58, ease: [0.16, 1, 0.3, 1] }
+const heroImages: FloatingImageProps[] = [
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/110a09a9d81f0e5305041c1b507d0f391743058910.png",
+    alt: "A delicious cheeseburger",
+    className:
+      "w-40 sm:w-56 md:w-64 lg:w-72 top-10 left-4 sm:left-10 md:top-20 md:left-20"
+  },
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/b4f62434088b0ddfa9b370991f58ca601743060218.png",
+    alt: "A bamboo steamer with dumplings",
+    className:
+      "w-28 sm:w-36 md:w-48 top-10 right-4 sm:right-10 md:top-16 md:right-16"
+  },
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/316495f4ba2a9c9d9aa97fed9fe61cf71743059024.png",
+    alt: "A slice of pizza",
+    className:
+      "w-32 sm:w-40 md:w-56 bottom-8 right-5 sm:right-10 md:bottom-16 md:right-20"
+  },
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/70b50e1a48a82437bfa2bed925b862701742892555.png",
+    alt: "A basil leaf",
+    className: "w-8 sm:w-12 top-1/4 left-1/3"
+  },
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/9ef1cc6ecf1d92798507ffad71e9492d1742892584.png",
+    alt: "A slice of tomato",
+    className: "w-8 sm:w-10 top-1/2 right-1/4"
+  },
+  {
+    src: "https://b.zmtcdn.com/data/o2_assets/9ef1cc6ecf1d92798507ffad71e9492d1742892584.png",
+    alt: "A slice of tomato",
+    className: "w-8 sm:w-10 top-3/4 left-1/4"
   }
-};
+];
 
 function BrandButton({
   href,
@@ -335,6 +359,130 @@ function LocalLogo({
       loading={eager ? "eager" : "lazy"}
       className={className}
     />
+  );
+}
+
+function Swirls() {
+  return (
+    <>
+      <svg
+        className="absolute left-0 top-0 -translate-x-1/3 -translate-y-1/3 text-[var(--ft-blush)]/55"
+        width="600"
+        height="600"
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M515.266 181.33C377.943 51.564 128.537 136.256 50.8123 293.565C-26.9127 450.874 125.728 600 125.728 600"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      <svg
+        className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 text-[var(--ft-citrine)]/45"
+        width="700"
+        height="700"
+        viewBox="0 0 700 700"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M26.8838 528.274C193.934 689.816 480.051 637.218 594.397 451.983C708.742 266.748 543.953 2.22235 543.953 2.22235"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+
+function FloatingFoodHero({
+  title,
+  description,
+  images,
+  className
+}: {
+  title: string;
+  description: string;
+  images: FloatingImageProps[];
+  className?: string;
+}) {
+  return (
+    <section
+      className={cn(
+        "relative flex min-h-[72vh] w-full items-center justify-center overflow-hidden bg-white py-20 sm:min-h-[78vh] md:py-28 lg:min-h-[84vh]",
+        className
+      )}
+    >
+      <div className="absolute inset-0 z-0">
+        <Swirls />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 z-10">
+        {images.map((image, index) => (
+          <motion.img
+            key={`${image.src}-${index}`}
+            src={image.src}
+            alt={image.alt}
+            className={cn("absolute object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.14)]", image.className)}
+            animate={{
+              y: [0, -16, 0],
+              rotate: [0, index % 2 === 0 ? 2 : -2, 0]
+            }}
+            transition={{
+              duration: 4.8 + index * 0.35,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: index * 0.18
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-20 mx-auto max-w-2xl px-4 text-center">
+        <Reveal>
+          <LocalLogo eager className="mx-auto mb-8 h-20 w-20 object-contain sm:h-24 sm:w-24" />
+        </Reveal>
+
+        <Reveal delay={0.06}>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
+            Food Characters
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <h1 className="ft-display mt-5 text-[clamp(3.25rem,8vw,7.4rem)] leading-[0.88] tracking-[0.002em] text-black">
+            {title}
+          </h1>
+        </Reveal>
+
+        <Reveal delay={0.14}>
+          <p className="mx-auto mt-7 max-w-2xl text-lg font-semibold leading-8 text-black/66 sm:text-xl sm:leading-9">
+            {description}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.18}>
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:items-center">
+            <BrandButton href="/#experiences" tone="denimPomodori">
+              Explore experiences
+              <TextArrow />
+            </BrandButton>
+
+            <BrandButton href="#join" tone="citrineMenta">
+              Become a Character
+              <TextArrow />
+            </BrandButton>
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
@@ -494,28 +642,6 @@ function CharacterSignalTicker() {
         ))}
       </div>
     </section>
-  );
-}
-
-function HeroImageCluster() {
-  return (
-    <motion.div
-      variants={pageVariants}
-      initial="hidden"
-      animate="show"
-      className="relative mx-auto mt-10 w-full max-w-[760px] lg:mt-0"
-    >
-      <motion.div variants={itemVariants} className="relative aspect-[1/1] w-full sm:aspect-[1.08/1]">
-        <Image
-          src={media.characterHero}
-          alt="Food Characters hero visual"
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 52vw"
-          className="object-contain"
-        />
-      </motion.div>
-    </motion.div>
   );
 }
 
@@ -741,53 +867,11 @@ function BecomeCharacterBox() {
 export default function FoodCharactersPage() {
   return (
     <main className="bg-white">
-      <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
-        <div className="pointer-events-none absolute -left-28 top-20 h-72 w-72 rounded-full bg-[var(--ft-blush)]/40 blur-3xl" />
-        <div className="pointer-events-none absolute -right-28 bottom-0 h-80 w-80 rounded-full bg-[var(--ft-citrine)]/38 blur-3xl" />
-
-        <div className="ft-container relative z-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <Reveal>
-              <LocalLogo eager className="mb-7 h-20 w-20 object-contain sm:h-24 sm:w-24" />
-            </Reveal>
-
-            <Reveal delay={0.06}>
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
-                Food Characters
-              </p>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <h1 className="ft-display mt-5 max-w-4xl text-[clamp(3.25rem,8vw,8.4rem)] leading-[0.88] tracking-[0.002em]">
-                The people behind every food story.
-              </h1>
-            </Reveal>
-
-            <Reveal delay={0.14}>
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-pomodori)] pl-5 text-lg font-semibold leading-8 text-black/72 sm:text-xl sm:leading-9">
-                Food Characters are chefs, makers, artisans, creators, hosts, producers, restaurants,
-                brands, and food-focused voices who turn their craft into memorable experiences.
-              </p>
-            </Reveal>
-
-            <Reveal delay={0.18}>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <BrandButton href="/#experiences" tone="denimPomodori">
-                  Explore experiences
-                  <TextArrow />
-                </BrandButton>
-
-                <BrandButton href="#join" tone="citrineMenta">
-                  Become a Character
-                  <TextArrow />
-                </BrandButton>
-              </div>
-            </Reveal>
-          </div>
-
-          <HeroImageCluster />
-        </div>
-      </section>
+      <FloatingFoodHero
+        title="The people behind every food story."
+        description="Food Characters are chefs, makers, artisans, creators, hosts, producers, restaurants, brands, and food-focused voices who turn their craft into memorable experiences."
+        images={heroImages}
+      />
 
       <CharacterSignalTicker />
 
