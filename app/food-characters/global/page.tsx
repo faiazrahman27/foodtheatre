@@ -11,12 +11,12 @@ import { Typewriter } from "@/components/ui/typewriter";
 const media = {
   logo: "/brand/foodtheatre-logo.png",
 
-  innovatorHero: "/media/home/character-innovators.jpg",
+  globalHero: "/media/home/character-global.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
 
-  linaPark: "/media/food-characters/innovators/lina-park.jpg",
-  marcoElia: "/media/food-characters/innovators/marco-elia.jpg",
-  nadiaSol: "/media/food-characters/innovators/nadia-sol.jpg",
+  laylaHaddad: "/media/food-characters/global/layla-haddad.jpg",
+  kenjiMora: "/media/food-characters/global/kenji-mora.jpg",
+  rosaNdlovu: "/media/food-characters/global/rosa-ndlovu.jpg",
 };
 
 type ButtonTone =
@@ -43,85 +43,85 @@ const buttonToneClasses: Record<ButtonTone, string> = {
 };
 
 const heroTypewriterWords = [
-  "Live Tastings.",
-  "Food Stories.",
-  "Bold Formats.",
-  "Table Moments.",
+  "Global Tables.",
+  "Cultural Flavour.",
+  "Shared Rituals.",
+  "Food Journeys.",
 ];
 
 const heroLetterColors = [
+  "var(--ft-blush)",
   "var(--ft-pomodori)",
   "var(--ft-citrine)",
   "var(--ft-denim)",
-  "var(--ft-viola)",
-  "var(--ft-blush)",
   "var(--ft-menta)",
+  "var(--ft-viola)",
 ];
 
-const innovatorSignals = [
-  { label: "Connected Food Moments", color: "var(--ft-pomodori)" },
-  { label: "Immersive Tastings", color: "var(--ft-citrine)" },
-  { label: "Live Table Energy", color: "var(--ft-denim)" },
-  { label: "Sensory Discovery", color: "var(--ft-menta)" },
-  { label: "Bold Food Ideas", color: "var(--ft-blush)" },
-  { label: "New Flavour Rituals", color: "var(--ft-viola)" },
-  { label: "Creative Food Formats", color: "var(--ft-pomodori)" },
-  { label: "Memorable Experiences", color: "var(--ft-citrine)" },
+const globalSignals = [
+  { label: "Global Food Stories", color: "var(--ft-blush)" },
+  { label: "Cultural Tables", color: "var(--ft-pomodori)" },
+  { label: "Family Recipes", color: "var(--ft-citrine)" },
+  { label: "Regional Flavours", color: "var(--ft-denim)" },
+  { label: "Shared Traditions", color: "var(--ft-menta)" },
+  { label: "Food Journeys", color: "var(--ft-viola)" },
+  { label: "Heritage Moments", color: "var(--ft-blush)" },
+  { label: "Memorable Gatherings", color: "var(--ft-pomodori)" },
 ];
 
-const featuredInnovators = [
+const featuredGlobalCharacters = [
   {
-    name: "Lina Park",
-    role: "Sensory Chef",
-    city: "Bologna",
-    image: media.linaPark,
+    name: "Layla Haddad",
+    role: "Cultural Table Host",
+    city: "Barcelona",
+    image: media.laylaHaddad,
+    accent: "var(--ft-blush)",
+    headline: "A generous table shaped by family recipes, warm hosting, and cultural memory.",
+    format: "Heritage Dinner",
+    mood: "Warm · Social · Story-Led",
+    experience: "Made for guests who want flavour, conversation, and a clear sense of place at the table.",
+  },
+  {
+    name: "Kenji Mora",
+    role: "Regional Food Guide",
+    city: "Lisbon",
+    image: media.kenjiMora,
     accent: "var(--ft-pomodori)",
-    headline: "A sensory table where aroma, texture, and presentation turn tasting into theatre.",
-    format: "Sensory Dinner",
-    mood: "Curious · Lively · Guest-Led",
-    experience: "Designed for guests who want food to feel vivid, personal, and memorable.",
+    headline: "A food journey built around regional ingredients, shared rituals, and confident flavour.",
+    format: "Regional Tasting",
+    mood: "Bright · Guided · Discovery-Focused",
+    experience: "A table for guests who enjoy learning through food, tasting through culture, and meeting the story behind each dish.",
   },
   {
-    name: "Marco Elia",
-    role: "Fermentation Maker",
-    city: "Modena",
-    image: media.marcoElia,
-    accent: "var(--ft-citrine)",
-    headline: "Living flavours, slow craft, and bold acidity brought together at the table.",
-    format: "Fermentation Table",
-    mood: "Crafted · Ingredient-Led · Story-Rich",
-    experience: "A flavour-led experience for guests who love origin, process, and discovery.",
-  },
-  {
-    name: "Nadia Sol",
-    role: "Future Dining Host",
-    city: "Milan",
-    image: media.nadiaSol,
-    accent: "var(--ft-viola)",
-    headline: "A modern food ritual where light, rhythm, hosting, and flavour move as one.",
-    format: "Immersive Table",
-    mood: "Modern · Connected · Atmospheric",
-    experience: "Built for guests looking for a shared food moment, not just another meal.",
+    name: "Rosa Ndlovu",
+    role: "Global Kitchen Maker",
+    city: "Berlin",
+    image: media.rosaNdlovu,
+    accent: "var(--ft-menta)",
+    headline: "A lively food moment where global recipes become easy to enter, share, and remember.",
+    format: "Global Table",
+    mood: "Connected · Colourful · Welcoming",
+    experience: "Built for guests looking for food with personality, cultural energy, and a strong shared-table feeling.",
   },
 ] as const;
 
 const guestPath = [
   {
     step: "01",
-    title: "Feel the Spark",
-    text: "Discover food ideas with live energy, bold flavour, and a fresh point of view.",
-    color: "var(--ft-pomodori)",
+    title: "Follow the Flavour",
+    text: "Discover food moments connected to culture, place, tradition, and personal story.",
+    color: "var(--ft-blush)",
   },
   {
     step: "02",
-    title: "Meet the Maker",
-    text: "Connect with the Character behind the table, the story, and the experience.",
-    color: "var(--ft-citrine)",
+    title: "Meet the Host",
+    text: "Connect with the Character bringing the recipe, the memory, and the table to life.",
+    color: "var(--ft-pomodori)",
   },
   {
     step: "03",
-    title: "Join the Moment",
-    text: "Choose the tasting, workshop, table, or immersive food moment that fits your mood.",
+    title: "Join the Table",
+    text: "Choose a dinner, tasting, workshop, or cultural food moment that feels worth sharing.",
     color: "var(--ft-menta)",
   },
 ];
@@ -249,13 +249,13 @@ function SquarePhoto({
   );
 }
 
-function InnovatorSignalTicker() {
-  const tickerItems = [...innovatorSignals, ...innovatorSignals];
+function GlobalSignalTicker() {
+  const tickerItems = [...globalSignals, ...globalSignals];
 
   return (
     <section
       className="relative overflow-hidden border-y border-black/10 bg-white py-5"
-      aria-label="Innovator food experience signals"
+      aria-label="Global food experience signals"
     >
       <div className="ft-signal-marquee items-center gap-9">
         {tickerItems.map((item, index) => (
@@ -278,13 +278,13 @@ function InnovatorSignalTicker() {
   );
 }
 
-function InnovatorHero() {
+function GlobalHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-pomodori)]/18 blur-3xl" />
-        <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-citrine)]/16 blur-3xl" />
-        <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-blush)]/18 blur-3xl" />
+        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-blush)]/28 blur-3xl" />
+        <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-pomodori)]/12 blur-3xl" />
+        <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-menta)]/14 blur-3xl" />
       </div>
 
       <div className="ft-container">
@@ -293,7 +293,7 @@ function InnovatorHero() {
             <LocalLogo className="h-20 w-20 object-contain sm:h-24 sm:w-24" />
 
             <span className="text-xs font-black uppercase tracking-[0.24em] text-black/58">
-              Food Characters / Innovators
+              Food Characters / Global
             </span>
           </div>
         </Reveal>
@@ -302,14 +302,14 @@ function InnovatorHero() {
           <Reveal delay={0.06}>
             <div className="min-w-0">
               <h1 className="ft-display ft-text-balance max-w-6xl text-[clamp(3rem,6.2vw,6.4rem)] leading-[1.02] tracking-[0.002em]">
-                <span>Innovators Create </span>
+                <span>Global Characters Bring </span>
                 <span className="inline-block min-h-[1.05em] min-w-[13.5ch] align-baseline sm:min-w-[14.5ch]">
                   <Typewriter
                     text={heroTypewriterWords}
-                    speed={34}
-                    initialDelay={180}
-                    waitTime={900}
-                    deleteSpeed={18}
+                    speed={32}
+                    initialDelay={160}
+                    waitTime={850}
+                    deleteSpeed={17}
                     showCursor={false}
                     colorizeLetters
                     letterColors={heroLetterColors}
@@ -318,14 +318,14 @@ function InnovatorHero() {
                 </span>
               </h1>
 
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-pomodori)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
-                Discover Food Characters creating bold tastings, live formats, and sensory
-                experiences that turn food into a moment guests remember.
+              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-blush)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
+                Discover Food Characters turning cultural recipes, family memory, regional flavour,
+                and generous hosting into food moments guests can enter, share, and remember.
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <BrandButton href="#featured-innovators" tone="pomodoriViola">
-                  Meet Innovators
+                <BrandButton href="#featured-global" tone="blushDenim">
+                  Meet Global Characters
                   <TextArrow />
                 </BrandButton>
 
@@ -339,12 +339,12 @@ function InnovatorHero() {
 
           <Reveal delay={0.12}>
             <div className="relative mx-auto w-full max-w-[390px] lg:mx-0">
-              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-citrine)]" />
+              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-blush)]" />
               <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-pomodori)]" />
 
               <SquarePhoto
-                src={media.innovatorHero}
-                alt="Innovator Food Character preparing a new food experience"
+                src={media.globalHero}
+                alt="Global Food Character hosting a cultural food moment"
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -358,9 +358,9 @@ function InnovatorHero() {
   );
 }
 
-function FeaturedInnovatorsCarousel() {
+function FeaturedGlobalCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeCharacter = featuredInnovators[activeIndex];
+  const activeCharacter = featuredGlobalCharacters[activeIndex];
 
   const activeLabel = useMemo(
     () => `${activeCharacter.name}, ${activeCharacter.role}`,
@@ -370,24 +370,24 @@ function FeaturedInnovatorsCarousel() {
   const showPrevious = () => {
     setActiveIndex(
       (currentIndex) =>
-        (currentIndex - 1 + featuredInnovators.length) % featuredInnovators.length
+        (currentIndex - 1 + featuredGlobalCharacters.length) % featuredGlobalCharacters.length
     );
   };
 
   const showNext = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredInnovators.length);
+    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredGlobalCharacters.length);
   };
 
   return (
     <section
-      id="featured-innovators"
+      id="featured-global"
       className="relative isolate overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
     >
       <div className="ft-container relative">
         <SectionIntro
-          label="Featured Innovators"
-          title="Fresh Food Voices Made for Discovery."
-          text="Meet the Characters turning flavour, craft, atmosphere, and hosting into memorable Food Theatre experiences."
+          label="Featured Global Characters"
+          title="Cultural Food Stories Made Easy to Enter."
+          text="Meet the Characters turning recipes, places, family memories, and hosting traditions into Food Theatre experiences."
         />
 
         <Reveal delay={0.08}>
@@ -418,14 +418,14 @@ function FeaturedInnovatorsCarousel() {
 
                 <div className="mt-5 flex items-center justify-between gap-4">
                   <div className="flex gap-2">
-                    {featuredInnovators.map((character, index) => (
+                    {featuredGlobalCharacters.map((character, index) => (
                       <button
                         key={character.name}
                         type="button"
                         onClick={() => setActiveIndex(index)}
                         className={`h-2.5 rounded-full transition-all duration-300 ${
                           activeIndex === index
-                            ? "w-10 bg-[var(--ft-pomodori)]"
+                            ? "w-10 bg-[var(--ft-blush)]"
                             : "w-2.5 bg-black/18 hover:bg-black/38"
                         }`}
                         aria-label={`Show ${character.name}`}
@@ -434,7 +434,7 @@ function FeaturedInnovatorsCarousel() {
                   </div>
 
                   <p className="rounded-full border border-black/10 bg-white/74 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-black/42 backdrop-blur-md">
-                    {activeIndex + 1} / {featuredInnovators.length}
+                    {activeIndex + 1} / {featuredGlobalCharacters.length}
                   </p>
                 </div>
               </div>
@@ -526,15 +526,15 @@ function GuestPath() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute right-[-10rem] top-10 h-[28rem] w-[28rem] rounded-full bg-[var(--ft-citrine)]/12 blur-3xl" />
-        <div className="absolute bottom-[-12rem] left-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-pomodori)]/10 blur-3xl" />
+        <div className="absolute right-[-10rem] top-10 h-[28rem] w-[28rem] rounded-full bg-[var(--ft-blush)]/14 blur-3xl" />
+        <div className="absolute bottom-[-12rem] left-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-menta)]/10 blur-3xl" />
       </div>
 
       <div className="ft-container">
         <SectionIntro
           label="Guest Journey"
-          title="A Clear Path From Curiosity to Experience."
-          text="Guests quickly understand the idea, meet the Character, and move toward a food moment they can join."
+          title="From Cultural Curiosity to a Shared Table."
+          text="Guests quickly understand the flavour, meet the host, and move toward a food moment that feels social, generous, and memorable."
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,0.94fr)_minmax(320px,440px)] lg:items-center">
@@ -578,7 +578,7 @@ function GuestPath() {
               transition={{ type: "spring", stiffness: 230, damping: 26 }}
               className="relative mx-auto w-full max-w-[440px]"
             >
-              <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--ft-citrine)]" />
+              <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--ft-blush)]" />
               <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-[var(--ft-pomodori)]" />
 
               <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-3 shadow-[0_24px_80px_rgba(17,17,17,0.10)]">
@@ -594,11 +594,11 @@ function GuestPath() {
 
                 <div className="mt-4 rounded-[1.45rem] border border-black/10 bg-white px-4 py-4">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-black/42">
-                    Looking for Something New in Food?
+                    Looking for Food With Culture?
                   </p>
 
                   <p className="mt-2 text-sm font-semibold leading-7 text-black/68">
-                    Discover the Character, feel the idea, and choose the moment you want to join.
+                    Discover the host, follow the flavour, and choose the global food moment you want to join.
                   </p>
                 </div>
               </div>
@@ -610,7 +610,7 @@ function GuestPath() {
   );
 }
 
-function JoinInnovators() {
+function JoinGlobalCharacters() {
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-24">
       <div className="ft-container">
@@ -619,34 +619,35 @@ function JoinInnovators() {
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-pomodori)] p-5 text-white sm:p-6 lg:p-8"
+              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-blush)] p-5 text-black sm:p-6 lg:p-8"
             >
-              <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/18" />
-              <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-citrine)]/80" />
-              <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-[var(--ft-blush)]/24" />
+              <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/34" />
+              <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-pomodori)]/70" />
+              <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-[var(--ft-citrine)]/28" />
 
               <div className="relative grid gap-7 md:grid-cols-[1fr_auto] md:items-center">
                 <div className="min-w-0">
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-white/62">
-                    For Bold Food Voices
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-black/48">
+                    For Global Food Voices
                   </p>
 
                   <h3 className="ft-display ft-text-balance mt-3 max-w-3xl text-[clamp(2.1rem,4vw,4rem)] leading-[1] tracking-[0.002em]">
-                    Create the Next Food Moment.
+                    Bring Your Food Culture Into a Shared Moment.
                   </h3>
 
-                  <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-white/74 sm:text-base sm:leading-8">
-                    Bring your flavour, story, and format into a connected Food Theatre experience.
+                  <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-black/64 sm:text-base sm:leading-8">
+                    Turn your recipes, hosting style, cultural memory, and table energy into a
+                    connected Food Theatre experience.
                   </p>
                 </div>
 
                 <div className="flex flex-col gap-3 md:justify-self-end">
-                  <BrandButton href="/#join" tone="citrineMenta">
+                  <BrandButton href="/#join" tone="denimPomodori">
                     Become a Character
                     <TextArrow />
                   </BrandButton>
 
-                  <BrandButton href="/contact" tone="violaBlush">
+                  <BrandButton href="/contact" tone="citrineMenta">
                     Contact Us
                     <TextArrow />
                   </BrandButton>
@@ -660,14 +661,14 @@ function JoinInnovators() {
   );
 }
 
-export default function InnovatorsPage() {
+export default function GlobalPage() {
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
-      <InnovatorHero />
-      <InnovatorSignalTicker />
-      <FeaturedInnovatorsCarousel />
+      <GlobalHero />
+      <GlobalSignalTicker />
+      <FeaturedGlobalCarousel />
       <GuestPath />
-      <JoinInnovators />
+      <JoinGlobalCharacters />
     </main>
   );
 }

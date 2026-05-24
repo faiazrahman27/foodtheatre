@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { type ReactNode, useRef } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
@@ -430,7 +430,10 @@ function FloatingFoodHero({
             key={`${image.src}-${index}`}
             src={image.src}
             alt={image.alt}
-            className={cn("absolute object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.14)]", image.className)}
+            className={cn(
+              "absolute object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.14)]",
+              image.className
+            )}
             animate={{
               y: [0, -16, 0],
               rotate: [0, index % 2 === 0 ? 2 : -2, 0]
@@ -616,6 +619,60 @@ function CharacterMosaic() {
   );
 }
 
+function AnimatedCharacterWorldsSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const introScale = useTransform(scrollYProgress, [0, 0.35, 0.7, 1], [0.96, 1, 1, 0.96]);
+  const introRotate = useTransform(scrollYProgress, [0, 0.35, 0.7, 1], [2, 0, 0, -2]);
+  const introY = useTransform(scrollYProgress, [0, 0.35, 0.7, 1], [42, 0, 0, -42]);
+
+  const mosaicScale = useTransform(scrollYProgress, [0, 0.38, 0.72, 1], [0.82, 1, 1, 0.86]);
+  const mosaicRotate = useTransform(scrollYProgress, [0, 0.38, 0.72, 1], [5, 0, 0, -5]);
+  const mosaicY = useTransform(scrollYProgress, [0, 0.38, 0.72, 1], [70, 0, 0, -70]);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="character-worlds"
+      className="relative scroll-mt-28 overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
+    >
+      <div className="pointer-events-none absolute inset-0 ft-brand-grid opacity-55" />
+
+      <div className="ft-container relative">
+        <motion.div
+          style={{
+            scale: introScale,
+            rotate: introRotate,
+            y: introY
+          }}
+          className="origin-center"
+        >
+          <SectionIntro label="Character worlds" title="Six ways food culture comes alive.">
+            Food Theatre gives every Character a clearer place in the story: what they make, how they
+            host, what they stand for, and why guests should step into their world.
+          </SectionIntro>
+        </motion.div>
+
+        <motion.div
+          style={{
+            scale: mosaicScale,
+            rotate: mosaicRotate,
+            y: mosaicY
+          }}
+          className="origin-center"
+        >
+          <CharacterMosaic />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function CharacterSignalTicker() {
   const tickerItems = [...characterSignals, ...characterSignals];
 
@@ -652,6 +709,21 @@ function DetailSection({
   detail: (typeof characterDetails)[number];
   index: number;
 }) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.28, 0.72, 1], [0.9, 1, 1, 0.92]);
+  const rotate = useTransform(
+    scrollYProgress,
+    [0, 0.28, 0.72, 1],
+    [index % 2 === 0 ? 3 : -3, 0, 0, index % 2 === 0 ? -3 : 3]
+  );
+  const y = useTransform(scrollYProgress, [0, 0.28, 0.72, 1], [70, 0, 0, -70]);
+
   const isReversed = index % 2 === 1;
   const textOnDark =
     detail.color === "var(--ft-pomodori)" ||
@@ -662,7 +734,13 @@ function DetailSection({
   return (
     <Reveal delay={index * 0.04}>
       <motion.article
+        ref={sectionRef}
         id={detail.slug}
+        style={{
+          scale,
+          rotate,
+          y
+        }}
         whileHover={{ x: isReversed ? -6 : 6 }}
         transition={{ type: "spring", stiffness: 230, damping: 28 }}
         className="group relative scroll-mt-32 overflow-visible border-y border-black/10 py-10 sm:py-14"
@@ -879,21 +957,7 @@ export default function FoodCharactersPage() {
 
       <CharacterSignalTicker />
 
-      <section
-        id="character-worlds"
-        className="relative scroll-mt-28 overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
-      >
-        <div className="pointer-events-none absolute inset-0 ft-brand-grid opacity-55" />
-
-        <div className="ft-container relative">
-          <SectionIntro label="Character worlds" title="Six ways food culture comes alive.">
-            Food Theatre gives every Character a clearer place in the story: what they make, how they
-            host, what they stand for, and why guests should step into their world.
-          </SectionIntro>
-
-          <CharacterMosaic />
-        </div>
-      </section>
+      <AnimatedCharacterWorldsSection />
 
       <section className="relative overflow-hidden bg-white py-10 sm:py-16">
         <div className="ft-container">

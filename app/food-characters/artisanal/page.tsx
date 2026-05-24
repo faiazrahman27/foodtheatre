@@ -11,12 +11,12 @@ import { Typewriter } from "@/components/ui/typewriter";
 const media = {
   logo: "/brand/foodtheatre-logo.png",
 
-  innovatorHero: "/media/home/character-innovators.jpg",
+  artisanalHero: "/media/home/character-artisanal.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
 
-  linaPark: "/media/food-characters/innovators/lina-park.jpg",
-  marcoElia: "/media/food-characters/innovators/marco-elia.jpg",
-  nadiaSol: "/media/food-characters/innovators/nadia-sol.jpg",
+  sofiaMarin: "/media/food-characters/artisanal/sofia-marin.jpg",
+  leoConti: "/media/food-characters/artisanal/leo-conti.jpg",
+  aminaBell: "/media/food-characters/artisanal/amina-bell.jpg",
 };
 
 type ButtonTone =
@@ -43,86 +43,86 @@ const buttonToneClasses: Record<ButtonTone, string> = {
 };
 
 const heroTypewriterWords = [
-  "Live Tastings.",
-  "Food Stories.",
-  "Bold Formats.",
-  "Table Moments.",
+  "Craft Tables.",
+  "Handmade Food.",
+  "Slow Flavour.",
+  "Maker Stories.",
 ];
 
 const heroLetterColors = [
-  "var(--ft-pomodori)",
-  "var(--ft-citrine)",
-  "var(--ft-denim)",
   "var(--ft-viola)",
-  "var(--ft-blush)",
+  "var(--ft-citrine)",
+  "var(--ft-pomodori)",
   "var(--ft-menta)",
+  "var(--ft-denim)",
+  "var(--ft-blush)",
 ];
 
-const innovatorSignals = [
-  { label: "Connected Food Moments", color: "var(--ft-pomodori)" },
-  { label: "Immersive Tastings", color: "var(--ft-citrine)" },
-  { label: "Live Table Energy", color: "var(--ft-denim)" },
-  { label: "Sensory Discovery", color: "var(--ft-menta)" },
-  { label: "Bold Food Ideas", color: "var(--ft-blush)" },
-  { label: "New Flavour Rituals", color: "var(--ft-viola)" },
-  { label: "Creative Food Formats", color: "var(--ft-pomodori)" },
-  { label: "Memorable Experiences", color: "var(--ft-citrine)" },
+const artisanalSignals = [
+  { label: "Handmade Food", color: "var(--ft-viola)" },
+  { label: "Small-Batch Craft", color: "var(--ft-citrine)" },
+  { label: "Maker-Led Tables", color: "var(--ft-pomodori)" },
+  { label: "Local Ingredients", color: "var(--ft-menta)" },
+  { label: "Process Stories", color: "var(--ft-denim)" },
+  { label: "Freshly Made Moments", color: "var(--ft-blush)" },
+  { label: "Craft Discovery", color: "var(--ft-viola)" },
+  { label: "Memorable Tastings", color: "var(--ft-citrine)" },
 ];
 
-const featuredInnovators = [
+const featuredArtisans = [
   {
-    name: "Lina Park",
-    role: "Sensory Chef",
+    name: "Sofia Marin",
+    role: "Pasta Maker",
     city: "Bologna",
-    image: media.linaPark,
-    accent: "var(--ft-pomodori)",
-    headline: "A sensory table where aroma, texture, and presentation turn tasting into theatre.",
-    format: "Sensory Dinner",
-    mood: "Curious · Lively · Guest-Led",
-    experience: "Designed for guests who want food to feel vivid, personal, and memorable.",
-  },
-  {
-    name: "Marco Elia",
-    role: "Fermentation Maker",
-    city: "Modena",
-    image: media.marcoElia,
-    accent: "var(--ft-citrine)",
-    headline: "Living flavours, slow craft, and bold acidity brought together at the table.",
-    format: "Fermentation Table",
-    mood: "Crafted · Ingredient-Led · Story-Rich",
-    experience: "A flavour-led experience for guests who love origin, process, and discovery.",
-  },
-  {
-    name: "Nadia Sol",
-    role: "Future Dining Host",
-    city: "Milan",
-    image: media.nadiaSol,
+    image: media.sofiaMarin,
     accent: "var(--ft-viola)",
-    headline: "A modern food ritual where light, rhythm, hosting, and flavour move as one.",
-    format: "Immersive Table",
-    mood: "Modern · Connected · Atmospheric",
-    experience: "Built for guests looking for a shared food moment, not just another meal.",
+    headline: "Handmade pasta shaped with rhythm, care, and a clear sense of place.",
+    format: "Maker Table",
+    mood: "Warm · Skilled · Welcoming",
+    experience: "Made for guests who want to see the craft, taste the process, and meet the hands behind the food.",
+  },
+  {
+    name: "Leo Conti",
+    role: "Bread Artisan",
+    city: "Florence",
+    image: media.leoConti,
+    accent: "var(--ft-citrine)",
+    headline: "A bread-led food moment built around texture, timing, and honest ingredients.",
+    format: "Bread Tasting",
+    mood: "Fresh · Grounded · Ingredient-Led",
+    experience: "A simple, generous table for guests who enjoy craft, flavour, and the story of how food is made.",
+  },
+  {
+    name: "Amina Bell",
+    role: "Chocolate Maker",
+    city: "Turin",
+    image: media.aminaBell,
+    accent: "var(--ft-pomodori)",
+    headline: "Small-batch chocolate presented through flavour, origin, and beautiful detail.",
+    format: "Craft Tasting",
+    mood: "Rich · Detailed · Story-Focused",
+    experience: "Built for guests who want something carefully made, beautifully presented, and easy to remember.",
   },
 ] as const;
 
 const guestPath = [
   {
     step: "01",
-    title: "Feel the Spark",
-    text: "Discover food ideas with live energy, bold flavour, and a fresh point of view.",
-    color: "var(--ft-pomodori)",
+    title: "Find the Craft",
+    text: "Discover handmade food moments shaped by skill, process, and clear flavour.",
+    color: "var(--ft-viola)",
   },
   {
     step: "02",
     title: "Meet the Maker",
-    text: "Connect with the Character behind the table, the story, and the experience.",
+    text: "Connect with the person behind the food, the method, and the table.",
     color: "var(--ft-citrine)",
   },
   {
     step: "03",
-    title: "Join the Moment",
-    text: "Choose the tasting, workshop, table, or immersive food moment that fits your mood.",
-    color: "var(--ft-menta)",
+    title: "Taste the Story",
+    text: "Choose a tasting, workshop, table, or maker-led experience that feels real and memorable.",
+    color: "var(--ft-pomodori)",
   },
 ];
 
@@ -249,13 +249,13 @@ function SquarePhoto({
   );
 }
 
-function InnovatorSignalTicker() {
-  const tickerItems = [...innovatorSignals, ...innovatorSignals];
+function ArtisanalSignalTicker() {
+  const tickerItems = [...artisanalSignals, ...artisanalSignals];
 
   return (
     <section
       className="relative overflow-hidden border-y border-black/10 bg-white py-5"
-      aria-label="Innovator food experience signals"
+      aria-label="Artisanal food experience signals"
     >
       <div className="ft-signal-marquee items-center gap-9">
         {tickerItems.map((item, index) => (
@@ -278,12 +278,12 @@ function InnovatorSignalTicker() {
   );
 }
 
-function InnovatorHero() {
+function ArtisanalHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-pomodori)]/18 blur-3xl" />
-        <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-citrine)]/16 blur-3xl" />
+        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-viola)]/20 blur-3xl" />
+        <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-citrine)]/14 blur-3xl" />
         <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-blush)]/18 blur-3xl" />
       </div>
 
@@ -293,7 +293,7 @@ function InnovatorHero() {
             <LocalLogo className="h-20 w-20 object-contain sm:h-24 sm:w-24" />
 
             <span className="text-xs font-black uppercase tracking-[0.24em] text-black/58">
-              Food Characters / Innovators
+              Food Characters / Artisanal
             </span>
           </div>
         </Reveal>
@@ -302,14 +302,14 @@ function InnovatorHero() {
           <Reveal delay={0.06}>
             <div className="min-w-0">
               <h1 className="ft-display ft-text-balance max-w-6xl text-[clamp(3rem,6.2vw,6.4rem)] leading-[1.02] tracking-[0.002em]">
-                <span>Innovators Create </span>
+                <span>Artisans Make </span>
                 <span className="inline-block min-h-[1.05em] min-w-[13.5ch] align-baseline sm:min-w-[14.5ch]">
                   <Typewriter
                     text={heroTypewriterWords}
-                    speed={34}
-                    initialDelay={180}
-                    waitTime={900}
-                    deleteSpeed={18}
+                    speed={32}
+                    initialDelay={160}
+                    waitTime={850}
+                    deleteSpeed={17}
                     showCursor={false}
                     colorizeLetters
                     letterColors={heroLetterColors}
@@ -318,14 +318,14 @@ function InnovatorHero() {
                 </span>
               </h1>
 
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-pomodori)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
-                Discover Food Characters creating bold tastings, live formats, and sensory
-                experiences that turn food into a moment guests remember.
+              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-viola)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
+                Discover Food Characters turning handmade food, patient craft, and local flavour
+                into clear, memorable experiences guests can taste and understand.
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <BrandButton href="#featured-innovators" tone="pomodoriViola">
-                  Meet Innovators
+                <BrandButton href="#featured-artisans" tone="violaBlush">
+                  Meet Artisans
                   <TextArrow />
                 </BrandButton>
 
@@ -340,11 +340,11 @@ function InnovatorHero() {
           <Reveal delay={0.12}>
             <div className="relative mx-auto w-full max-w-[390px] lg:mx-0">
               <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-citrine)]" />
-              <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-pomodori)]" />
+              <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-viola)]" />
 
               <SquarePhoto
-                src={media.innovatorHero}
-                alt="Innovator Food Character preparing a new food experience"
+                src={media.artisanalHero}
+                alt="Artisanal Food Character shaping handmade food"
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -358,9 +358,9 @@ function InnovatorHero() {
   );
 }
 
-function FeaturedInnovatorsCarousel() {
+function FeaturedArtisansCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeCharacter = featuredInnovators[activeIndex];
+  const activeCharacter = featuredArtisans[activeIndex];
 
   const activeLabel = useMemo(
     () => `${activeCharacter.name}, ${activeCharacter.role}`,
@@ -370,24 +370,24 @@ function FeaturedInnovatorsCarousel() {
   const showPrevious = () => {
     setActiveIndex(
       (currentIndex) =>
-        (currentIndex - 1 + featuredInnovators.length) % featuredInnovators.length
+        (currentIndex - 1 + featuredArtisans.length) % featuredArtisans.length
     );
   };
 
   const showNext = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredInnovators.length);
+    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredArtisans.length);
   };
 
   return (
     <section
-      id="featured-innovators"
+      id="featured-artisans"
       className="relative isolate overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
     >
       <div className="ft-container relative">
         <SectionIntro
-          label="Featured Innovators"
-          title="Fresh Food Voices Made for Discovery."
-          text="Meet the Characters turning flavour, craft, atmosphere, and hosting into memorable Food Theatre experiences."
+          label="Featured Artisans"
+          title="Craft Made Clear, Warm, and Memorable."
+          text="Meet the Characters turning handmade food, local ingredients, and maker stories into Food Theatre experiences."
         />
 
         <Reveal delay={0.08}>
@@ -418,14 +418,14 @@ function FeaturedInnovatorsCarousel() {
 
                 <div className="mt-5 flex items-center justify-between gap-4">
                   <div className="flex gap-2">
-                    {featuredInnovators.map((character, index) => (
+                    {featuredArtisans.map((character, index) => (
                       <button
                         key={character.name}
                         type="button"
                         onClick={() => setActiveIndex(index)}
                         className={`h-2.5 rounded-full transition-all duration-300 ${
                           activeIndex === index
-                            ? "w-10 bg-[var(--ft-pomodori)]"
+                            ? "w-10 bg-[var(--ft-viola)]"
                             : "w-2.5 bg-black/18 hover:bg-black/38"
                         }`}
                         aria-label={`Show ${character.name}`}
@@ -434,7 +434,7 @@ function FeaturedInnovatorsCarousel() {
                   </div>
 
                   <p className="rounded-full border border-black/10 bg-white/74 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-black/42 backdrop-blur-md">
-                    {activeIndex + 1} / {featuredInnovators.length}
+                    {activeIndex + 1} / {featuredArtisans.length}
                   </p>
                 </div>
               </div>
@@ -527,14 +527,14 @@ function GuestPath() {
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute right-[-10rem] top-10 h-[28rem] w-[28rem] rounded-full bg-[var(--ft-citrine)]/12 blur-3xl" />
-        <div className="absolute bottom-[-12rem] left-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-pomodori)]/10 blur-3xl" />
+        <div className="absolute bottom-[-12rem] left-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-viola)]/10 blur-3xl" />
       </div>
 
       <div className="ft-container">
         <SectionIntro
           label="Guest Journey"
-          title="A Clear Path From Curiosity to Experience."
-          text="Guests quickly understand the idea, meet the Character, and move toward a food moment they can join."
+          title="From Craft Curiosity to a Maker-Led Table."
+          text="Guests quickly understand the craft, meet the maker, and move toward a food moment they can taste, join, and remember."
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,0.94fr)_minmax(320px,440px)] lg:items-center">
@@ -579,7 +579,7 @@ function GuestPath() {
               className="relative mx-auto w-full max-w-[440px]"
             >
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--ft-citrine)]" />
-              <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-[var(--ft-pomodori)]" />
+              <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-[var(--ft-viola)]" />
 
               <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-3 shadow-[0_24px_80px_rgba(17,17,17,0.10)]">
                 <div className="relative aspect-square overflow-hidden rounded-[1.55rem] bg-[#fffdf8]">
@@ -594,11 +594,11 @@ function GuestPath() {
 
                 <div className="mt-4 rounded-[1.45rem] border border-black/10 bg-white px-4 py-4">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-black/42">
-                    Looking for Something New in Food?
+                    Looking for Food With Craft?
                   </p>
 
                   <p className="mt-2 text-sm font-semibold leading-7 text-black/68">
-                    Discover the Character, feel the idea, and choose the moment you want to join.
+                    Discover the maker, understand the process, and choose the moment you want to join.
                   </p>
                 </div>
               </div>
@@ -610,7 +610,7 @@ function GuestPath() {
   );
 }
 
-function JoinInnovators() {
+function JoinArtisans() {
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-24">
       <div className="ft-container">
@@ -619,7 +619,7 @@ function JoinInnovators() {
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-pomodori)] p-5 text-white sm:p-6 lg:p-8"
+              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-viola)] p-5 text-white sm:p-6 lg:p-8"
             >
               <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/18" />
               <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-citrine)]/80" />
@@ -628,15 +628,16 @@ function JoinInnovators() {
               <div className="relative grid gap-7 md:grid-cols-[1fr_auto] md:items-center">
                 <div className="min-w-0">
                   <p className="text-xs font-black uppercase tracking-[0.24em] text-white/62">
-                    For Bold Food Voices
+                    For Skilled Food Makers
                   </p>
 
                   <h3 className="ft-display ft-text-balance mt-3 max-w-3xl text-[clamp(2.1rem,4vw,4rem)] leading-[1] tracking-[0.002em]">
-                    Create the Next Food Moment.
+                    Bring Your Craft Into a Food Theatre Moment.
                   </h3>
 
                   <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-white/74 sm:text-base sm:leading-8">
-                    Bring your flavour, story, and format into a connected Food Theatre experience.
+                    Turn your process, ingredients, technique, and maker story into a connected
+                    Food Theatre experience.
                   </p>
                 </div>
 
@@ -646,7 +647,7 @@ function JoinInnovators() {
                     <TextArrow />
                   </BrandButton>
 
-                  <BrandButton href="/contact" tone="violaBlush">
+                  <BrandButton href="/contact" tone="blushDenim">
                     Contact Us
                     <TextArrow />
                   </BrandButton>
@@ -660,14 +661,14 @@ function JoinInnovators() {
   );
 }
 
-export default function InnovatorsPage() {
+export default function ArtisanalPage() {
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
-      <InnovatorHero />
-      <InnovatorSignalTicker />
-      <FeaturedInnovatorsCarousel />
+      <ArtisanalHero />
+      <ArtisanalSignalTicker />
+      <FeaturedArtisansCarousel />
       <GuestPath />
-      <JoinInnovators />
+      <JoinArtisans />
     </main>
   );
 }
