@@ -86,7 +86,7 @@ const characterTypes = [
     name: "Innovators",
     slug: "innovators",
     color: "var(--ft-pomodori)",
-    href: "#innovators",
+    href: "/food-characters/innovators",
     buttonTone: "violaCitrine",
     image: media.characterInnovators,
     text: "New techniques, unexpected formats, and fresh ways of experiencing taste.",
@@ -97,7 +97,7 @@ const characterTypes = [
     name: "Creators",
     slug: "creators",
     color: "var(--ft-citrine)",
-    href: "#creators",
+    href: "/food-characters/creators",
     buttonTone: "denimPomodori",
     image: media.characterCreators,
     text: "Food storytellers shaping flavour, visuals, content, and atmosphere.",
@@ -108,7 +108,7 @@ const characterTypes = [
     name: "Artisanal",
     slug: "artisanal",
     color: "var(--ft-viola)",
-    href: "#artisanal",
+    href: "/food-characters/artisanal",
     buttonTone: "citrineMenta",
     image: media.characterArtisanal,
     text: "Small makers creating distinctive food through skill and craft.",
@@ -119,7 +119,7 @@ const characterTypes = [
     name: "Global",
     slug: "global",
     color: "var(--ft-blush)",
-    href: "#global",
+    href: "/food-characters/global",
     buttonTone: "mentaDenim",
     image: media.characterGlobal,
     text: "Recipes, traditions, memories, and flavours from around the world.",
@@ -130,7 +130,7 @@ const characterTypes = [
     name: "Wellness",
     slug: "wellness",
     color: "var(--ft-menta)",
-    href: "#wellness",
+    href: "/food-characters/wellness",
     buttonTone: "pomodoriViola",
     image: media.characterWellness,
     text: "Healthy food made generous, balanced, beautiful, and enjoyable.",
@@ -141,7 +141,7 @@ const characterTypes = [
     name: "FoodCo.s",
     slug: "foodcos",
     color: "var(--ft-denim)",
-    href: "#foodcos",
+    href: "/food-characters/foodcos",
     buttonTone: "citrineMenta",
     image: media.characterFoodcos,
     text: "Restaurants, caterers, producers, operators, and food brands.",
@@ -755,7 +755,11 @@ function DetailSection({
                     {detail.body}
                   </p>
 
-                  <BrandButton href={`#${detail.slug}`} tone={detail.buttonTone} className="mt-7">
+                  <BrandButton
+                    href={`/food-characters/${detail.slug}`}
+                    tone={detail.buttonTone}
+                    className="mt-7"
+                  >
                     Explore {detail.name}
                     <TextArrow />
                   </BrandButton>

@@ -9,42 +9,44 @@ import { useState } from "react";
 const characterNavItems = [
   {
     label: "Innovators",
-    href: "/food-characters/innovators",
+    href: "/food-characters#innovators",
     description: "Fresh formats and unexpected food ideas.",
     dotClass: "bg-[var(--ft-pomodori)]",
-    hoverClass: "hover:border-[var(--ft-pomodori)] hover:bg-[var(--ft-pomodori)]/10"
+    hoverClass:
+      "hover:border-[var(--ft-pomodori)] hover:bg-[var(--ft-pomodori)]/10"
   },
   {
     label: "Creators",
-    href: "/food-characters/creators",
+    href: "/food-characters#creators",
     description: "Food storytellers shaping flavour and mood.",
     dotClass: "bg-[var(--ft-citrine)]",
-    hoverClass: "hover:border-[var(--ft-citrine)] hover:bg-[var(--ft-citrine)]/18"
+    hoverClass:
+      "hover:border-[var(--ft-citrine)] hover:bg-[var(--ft-citrine)]/20"
   },
   {
     label: "Artisanal",
-    href: "/food-characters/artisanal",
+    href: "/food-characters#artisanal",
     description: "Small makers, craft, and distinctive skill.",
     dotClass: "bg-[var(--ft-viola)]",
     hoverClass: "hover:border-[var(--ft-viola)] hover:bg-[var(--ft-viola)]/10"
   },
   {
     label: "Global",
-    href: "/food-characters/global",
+    href: "/food-characters#global",
     description: "Recipes, traditions, memories, and cultures.",
     dotClass: "bg-[var(--ft-blush)]",
-    hoverClass: "hover:border-[var(--ft-blush)] hover:bg-[var(--ft-blush)]/28"
+    hoverClass: "hover:border-[var(--ft-blush)] hover:bg-[var(--ft-blush)]/30"
   },
   {
     label: "Wellness",
-    href: "/food-characters/wellness",
+    href: "/food-characters#wellness",
     description: "Balanced, generous, beautiful food moments.",
     dotClass: "bg-[var(--ft-menta)]",
     hoverClass: "hover:border-[var(--ft-menta)] hover:bg-[var(--ft-menta)]/10"
   },
   {
     label: "FoodCo.s",
-    href: "/food-characters/foodcos",
+    href: "/food-characters#foodcos",
     description: "Restaurants, producers, brands, and operators.",
     dotClass: "bg-[var(--ft-denim)]",
     hoverClass: "hover:border-[var(--ft-denim)] hover:bg-[var(--ft-denim)]/10"
@@ -55,27 +57,30 @@ const mainNavItems = [
   {
     label: "Experiences",
     href: "/#experiences",
+    hasCharacterDropdown: false,
     hoverClass:
       "hover:bg-[var(--ft-denim)] hover:text-white active:bg-[var(--ft-pomodori)] active:text-white"
   },
   {
-    label: "Characters",
+    label: "Food Characters",
     href: "/food-characters",
+    hasCharacterDropdown: true,
     hoverClass:
       "hover:bg-[var(--ft-viola)] hover:text-white active:bg-[var(--ft-menta)] active:text-white"
   },
   {
-    label: "Theatre",
+    label: "Theatres",
     href: "/#theatre",
+    hasCharacterDropdown: false,
     hoverClass:
       "hover:bg-[var(--ft-pomodori)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
   }
-];
+] as const;
 
 const actionNavItems = [
-  { label: "Become a Character", href: "/#join" },
+  { label: "Be a Character", href: "/#join" },
   { label: "Host a Theatre", href: "/#theatre" }
-];
+] as const;
 
 function CharacterDropdown() {
   return (
@@ -86,18 +91,19 @@ function CharacterDropdown() {
             Food Characters
           </p>
           <p className="mt-2 max-w-sm text-sm font-semibold leading-6 text-black/62">
-            Explore the people, makers, brands, and food voices behind each experience.
+            Explore the people, makers, brands, and food voices behind each
+            experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 pt-4">
+        <div className="grid grid-cols-2 items-stretch gap-2 pt-4">
           {characterNavItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`group/item rounded-[1.25rem] border border-black/10 bg-white px-4 py-4 transition duration-300 hover:-translate-y-0.5 ${item.hoverClass}`}
+              className={`group/item flex h-full rounded-[1.25rem] border border-black/10 bg-white px-4 py-4 transition duration-300 hover:-translate-y-0.5 ${item.hoverClass}`}
             >
-              <div className="flex items-start gap-3">
+              <span className="flex items-start gap-3">
                 <span
                   className={`mt-1 h-3.5 w-3.5 shrink-0 rounded-full ${item.dotClass}`}
                   aria-hidden="true"
@@ -111,7 +117,7 @@ function CharacterDropdown() {
                     {item.description}
                   </span>
                 </span>
-              </div>
+              </span>
             </Link>
           ))}
         </div>
@@ -127,10 +133,10 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-white/86 backdrop-blur-2xl">
-      <nav className="ft-container relative flex h-20 items-center justify-between gap-4">
+      <nav className="ft-container relative grid h-20 grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[minmax(8rem,1fr)_auto_minmax(8rem,1fr)] lg:gap-4">
         <Link
           href="/"
-          className="group flex shrink-0 items-center ft-focus-ring"
+          className="group flex shrink-0 items-center justify-self-start ft-focus-ring"
           aria-label="Food Theatre home"
           onClick={closeMenu}
         >
@@ -144,37 +150,40 @@ export function Navbar() {
           />
         </Link>
 
-        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center rounded-full border border-black/10 bg-white/76 px-2 py-2 backdrop-blur-xl lg:flex">
-          {mainNavItems.map((item) =>
-            item.label === "Characters" ? (
-              <div key={item.href} className="group relative">
+        <div className="hidden justify-self-center lg:col-start-2 lg:flex">
+          <div className="flex h-[3.25rem] items-center gap-1 rounded-full border border-black/10 bg-white/76 p-1.5 backdrop-blur-xl">
+            {mainNavItems.map((item) =>
+              item.hasCharacterDropdown ? (
+                <div key={item.href} className="group relative flex">
+                  <Link
+                    href={item.href}
+                    aria-haspopup="menu"
+                    className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
+                  >
+                    {item.label}
+                  </Link>
+
+                  <CharacterDropdown />
+                </div>
+              ) : (
                 <Link
+                  key={item.href}
                   href={item.href}
-                  className={`rounded-full bg-white px-5 py-2.5 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 hover:border-black/10 ${item.hoverClass}`}
+                  className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
                 >
                   {item.label}
                 </Link>
-
-                <CharacterDropdown />
-              </div>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-full bg-white px-5 py-2.5 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 hover:border-black/10 ${item.hoverClass}`}
-              >
-                {item.label}
-              </Link>
-            )
-          )}
+              )
+            )}
+          </div>
         </div>
 
-        <div className="hidden items-center gap-2 xl:flex">
+        <div className="hidden items-center justify-end gap-2 justify-self-end xl:flex">
           {actionNavItems.map((item) => (
             <Link
               key={`${item.label}-${item.href}`}
               href={item.href}
-              className="rounded-full border border-black/12 bg-[var(--ft-citrine)] px-5 py-3 text-sm font-extrabold text-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
+              className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-black/10 bg-[var(--ft-citrine)] px-5 text-sm font-extrabold text-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
             >
               {item.label}
             </Link>
@@ -184,7 +193,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setIsOpen((value) => !value)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white ft-soft-shadow ft-focus-ring lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full border border-black/10 bg-white ft-soft-shadow ft-focus-ring lg:hidden"
           aria-label="Toggle navigation menu"
           aria-expanded={isOpen}
         >
@@ -203,7 +212,7 @@ export function Navbar() {
           >
             <div className="mx-auto flex max-w-xl flex-col gap-2 pt-4">
               {mainNavItems.map((item) =>
-                item.label === "Characters" ? (
+                item.hasCharacterDropdown ? (
                   <div
                     key={item.href}
                     className="rounded-[1.6rem] border border-black/10 bg-white p-2"
