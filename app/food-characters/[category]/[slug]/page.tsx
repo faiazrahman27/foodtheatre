@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useParams } from "next/navigation";
-import { type FormEvent, type ReactNode, useMemo, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useState } from "react";
 import {
-  findFoodCharacterProfile,
   type FoodCharacterMenuItem,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { findFoodCharacterProfileFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const CONTACT_EMAIL = "hello@foodtheatre.com";
 
@@ -208,7 +208,7 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
     {
       label: "Home base",
       title: profile.location,
-      text: `${profile.city} gives this Food Character a real local starting point inside the Food Theatre world.`,
+      text: `${profile.city} is the starting point for this Food Character’s table, story, and guest experience.`,
     },
     {
       label: "Availability",
@@ -217,7 +217,7 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
     },
     {
       label: "Travel",
-      title: "Relocation",
+      title: "Travel-ready",
       text: profile.relocation,
     },
   ].filter((item) => item.title || item.text);
@@ -261,13 +261,13 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
 
       <div className="grid gap-3 md:grid-cols-2">
         <TagGroup
-          label="Cuisine / Style / Format"
+          label="Taste, style, and format"
           items={profile.cuisineStyleFormat}
           accentColor={profile.accentSoftColor}
         />
 
         <TagGroup
-          label="Collaboration Type"
+          label="Ways to experience it"
           items={profile.collaborationTypes}
           accentColor="rgba(255, 255, 255, 0.88)"
         />
@@ -355,7 +355,7 @@ function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
       ) : (
         <div className="flex aspect-square items-center justify-center rounded-[1.15rem] bg-[#fffdf8]">
           <span className="text-[0.62rem] font-black uppercase tracking-[0.16em] text-black/32">
-            Menu item
+            Food moment
           </span>
         </div>
       )}
@@ -398,6 +398,9 @@ function MenuArtwork({
   large?: boolean;
 }) {
   const sections = profile.menu.sections;
+  const hasMenuSubtitle = Boolean(profile.menu.subtitle);
+  const hasMenuCurrency = Boolean(profile.menu.currency);
+  const hasMenuNote = Boolean(profile.menu.note);
 
   return (
     <div
@@ -416,7 +419,7 @@ function MenuArtwork({
         <div className="grid gap-5 border-b border-black/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-start">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
-              Food Theatre menu
+              Taste story
             </p>
 
             <h3 className="ft-display mt-3 max-w-xl text-[clamp(2.35rem,6vw,4.6rem)] leading-[0.92] tracking-[0.002em]">
@@ -437,15 +440,21 @@ function MenuArtwork({
           />
         </div>
 
-        <div className="mt-5 rounded-[1.5rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
-          <p className="max-w-2xl text-sm font-semibold leading-7 text-black/66">
-            {profile.menu.subtitle}
-          </p>
+        {hasMenuSubtitle || hasMenuCurrency ? (
+          <div className="mt-5 rounded-[1.5rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
+            {hasMenuSubtitle ? (
+              <p className="max-w-2xl text-sm font-semibold leading-7 text-black/66">
+                {profile.menu.subtitle}
+              </p>
+            ) : null}
 
-          <p className="mt-3 text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
-            Currency · {profile.menu.currency}
-          </p>
-        </div>
+            {hasMenuCurrency ? (
+              <p className="mt-3 text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
+                Prices in {profile.menu.currency}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         {sections.length ? (
           <div className="mt-7 grid gap-5">
@@ -475,15 +484,15 @@ function MenuArtwork({
               </div>
             ))}
           </div>
-        ) : (
+        ) : hasMenuNote ? (
           <div className="mt-7 rounded-[1.6rem] border border-black/10 bg-white/76 p-5">
             <p className="text-sm font-semibold leading-7 text-black/58">
-              This character menu is not available yet.
+              {profile.menu.note}
             </p>
           </div>
-        )}
+        ) : null}
 
-        {profile.menu.note ? (
+        {hasMenuNote && sections.length ? (
           <p className="mt-6 border-t border-black/10 pt-5 text-xs font-semibold leading-6 text-black/48">
             {profile.menu.note}
           </p>
@@ -522,16 +531,16 @@ function ConnectionModal({
     const dateOrTiming = String(formData.get("dateOrTiming") || "").trim();
     const message = String(formData.get("message") || "").trim();
 
-    const subject = `Connection request — ${profile.name}`;
+    const subject = `Food Theatre request — ${profile.name}`;
 
     const body = [
-      "Food Theatre connection request",
+      "Food Theatre table request",
       "",
-      `Character: ${profile.name}`,
+      `Food Character: ${profile.name}`,
       `Category: ${profile.categoryLabel}`,
       `Role: ${profile.role}`,
-      `Cuisine / style / format: ${profile.cuisineStyleFormat.join(", ") || "Not provided"}`,
-      `Collaboration type: ${profile.collaborationTypes.join(", ") || "Not provided"}`,
+      `Taste, style, and format: ${profile.cuisineStyleFormat.join(", ") || "Not provided"}`,
+      `Ways to experience it: ${profile.collaborationTypes.join(", ") || "Not provided"}`,
       "",
       `Name: ${fullName}`,
       `Email: ${email}`,
@@ -582,7 +591,7 @@ function ConnectionModal({
 
               <div className="relative z-10 border-b border-black/10 pb-5 pr-12">
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
-                  Connection request
+                  Plan a food moment
                 </p>
                 <h2 className="ft-display mt-3 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95]">
                   Connect with {profile.name}.
@@ -670,7 +679,7 @@ function ConnectionModal({
                   type="submit"
                   className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--ft-denim)] px-6 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[var(--ft-pomodori)] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)] sm:w-auto"
                 >
-                  Send request
+                  Send my request
                   <span>→</span>
                 </button>
 
@@ -732,6 +741,30 @@ function MenuModal({
   );
 }
 
+function LoadingProfile() {
+  return (
+    <main className="min-h-screen bg-white px-5 py-20">
+      <div className="mx-auto max-w-3xl rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7 text-center">
+        <Image
+          src="/brand/foodtheatre-logo.png"
+          alt="Food Theatre logo"
+          width={120}
+          height={120}
+          className="mx-auto h-20 w-20 object-contain"
+        />
+
+        <h1 className="ft-display mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95]">
+          Preparing this food story.
+        </h1>
+
+        <p className="mx-auto mt-5 max-w-xl text-base font-semibold leading-8 text-black/62">
+          We’re setting the table for this Food Theatre experience.
+        </p>
+      </div>
+    </main>
+  );
+}
+
 function NotFoundProfile() {
   return (
     <main className="min-h-screen bg-white px-5 py-20">
@@ -745,15 +778,16 @@ function NotFoundProfile() {
         />
 
         <h1 className="ft-display mt-6 text-[clamp(2.5rem,7vw,5rem)] leading-[0.95]">
-          Character not found.
+          This food story is being curated.
         </h1>
 
         <p className="mx-auto mt-5 max-w-xl text-base font-semibold leading-8 text-black/62">
-          This Food Character profile is not available yet.
+          This Food Character experience is not ready to explore yet. Discover the wider character
+          world while this table comes together.
         </p>
 
         <BrandButton href="/food-characters" tone="citrineMenta" className="mt-7">
-          Back to Food Characters
+          Explore Food Characters
           <TextArrow />
         </BrandButton>
       </div>
@@ -766,12 +800,51 @@ export default function FoodCharacterProfilePage() {
   const category = getParamValue(params.category);
   const slug = getParamValue(params.slug);
 
-  const profile = useMemo(() => {
-    return findFoodCharacterProfile(category, slug);
-  }, [category, slug]);
-
+  const [profile, setProfile] = useState<FoodCharacterProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfile() {
+      if (!category || !slug) {
+        setProfile(null);
+        setLoadingProfile(false);
+        return;
+      }
+
+      setLoadingProfile(true);
+      setProfile(null);
+
+      try {
+        const sanityProfile = await findFoodCharacterProfileFromSanity(category, slug);
+
+        if (!cancelled) {
+          setProfile(sanityProfile);
+          setLoadingProfile(false);
+        }
+      } catch (error) {
+        console.error("Food character fetch failed:", error);
+
+        if (!cancelled) {
+          setProfile(null);
+          setLoadingProfile(false);
+        }
+      }
+    }
+
+    loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [category, slug]);
+
+  if (loadingProfile && !profile) {
+    return <LoadingProfile />;
+  }
 
   if (!profile) {
     return <NotFoundProfile />;
@@ -783,12 +856,14 @@ export default function FoodCharacterProfilePage() {
     { label: "Facebook", href: profile.facebook },
   ].filter((item): item is { label: string; href: string } => Boolean(item.href));
 
-  const hasWorkingFormats =
+  const hasExperienceFormats =
     profile.cuisineStyleFormat.length > 0 || profile.collaborationTypes.length > 0;
 
   const hasMenu =
     Boolean(profile.menu.title) ||
     Boolean(profile.menu.subtitle) ||
+    Boolean(profile.menu.currency) ||
+    Boolean(profile.menu.note) ||
     profile.menu.sections.length > 0;
 
   return (
@@ -869,7 +944,7 @@ export default function FoodCharacterProfilePage() {
         <div className="ft-container">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
-              <SectionLabel>About the Character</SectionLabel>
+              <SectionLabel>Meet the food voice</SectionLabel>
 
               <h2 className="ft-display mt-4 max-w-4xl text-[clamp(2.6rem,5vw,5.2rem)] leading-[1]">
                 The person behind the table.
@@ -923,7 +998,7 @@ export default function FoodCharacterProfilePage() {
 
               {profile.connectedExperiences.length ? (
                 <div className="rounded-[2rem] border border-black/10 bg-white p-5">
-                  <SectionLabel>Connected experiences</SectionLabel>
+                  <SectionLabel>Experiences with {profile.name}</SectionLabel>
 
                   <div className="mt-6 grid gap-4">
                     {profile.connectedExperiences.map((experience) => (
@@ -946,19 +1021,19 @@ export default function FoodCharacterProfilePage() {
                 </div>
               ) : null}
 
-              {hasWorkingFormats ? (
+              {hasExperienceFormats ? (
                 <div className="rounded-[2rem] border border-black/10 bg-white p-5">
-                  <SectionLabel>Working formats</SectionLabel>
+                  <SectionLabel>Ways to experience this table</SectionLabel>
 
                   <div className="mt-6 grid gap-3">
                     <TagGroup
-                      label="Cuisine / Style / Format"
+                      label="Taste, style, and format"
                       items={profile.cuisineStyleFormat}
                       accentColor={profile.accentSoftColor}
                     />
 
                     <TagGroup
-                      label="Collaboration Type"
+                      label="Guest formats"
                       items={profile.collaborationTypes}
                       accentColor="rgba(255, 253, 248, 0.95)"
                     />
@@ -975,15 +1050,15 @@ export default function FoodCharacterProfilePage() {
           <div className="ft-container">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
               <div>
-                <SectionLabel>Character Menu</SectionLabel>
+                <SectionLabel>Taste the menu</SectionLabel>
 
                 <h2 className="ft-display mt-4 max-w-4xl text-[clamp(2.6rem,5vw,5.2rem)] leading-[1]">
-                  A menu direction for this Food Theatre moment.
+                  A taste direction for this Food Theatre moment.
                 </h2>
 
                 <p className="mt-6 max-w-xl text-base font-semibold leading-8 text-black/62">
-                  Explore this Character’s menu direction with dishes, descriptions, prices, and
-                  visual details.
+                  Explore this table’s dishes, descriptions, prices, and visual details before
+                  planning your Food Theatre moment.
                 </p>
 
                 <ActionButton

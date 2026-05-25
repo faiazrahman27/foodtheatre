@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -25,6 +25,8 @@ const globalAccentSoftColor =
   globalCategory?.accentSoftColor ?? "rgba(243, 183, 191, 0.22)";
 const globalHeroImage =
   globalCategory?.heroImage ?? "/media/home/character-global.jpg";
+const globalHeroImageAlt =
+  globalCategory?.heroImageAlt ?? "Global Food Character hosting a cultural food moment";
 
 type ButtonTone =
   | "denimPomodori"
@@ -75,8 +77,6 @@ const globalSignals = [
   { label: "Heritage Moments", color: "var(--ft-blush)" },
   { label: "Memorable Gatherings", color: "var(--ft-pomodori)" },
 ];
-
-const featuredGlobalCharacters = getFeaturedFoodCharacterProfilesByCategory("global");
 
 const guestPath = [
   {
@@ -317,7 +317,7 @@ function GlobalHero() {
 
               <SquarePhoto
                 src={globalHeroImage}
-                alt="Global Food Character hosting a cultural food moment"
+                alt={globalHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -406,26 +406,40 @@ function GlobalPosterCard({ character }: { character: FoodCharacterProfile }) {
   );
 }
 
-function EmptyGlobalState() {
-  return (
-    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-        No Global Characters yet
-      </p>
-
-      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
-        Global profiles will appear here once they are added.
-      </h3>
-
-      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
-        This section is ready for Sanity. When Global Characters are published, their names, card
-        headlines, transparent PNG cutouts, and profile links will render here.
-      </p>
-    </div>
-  );
-}
-
 function FeaturedGlobalCharacters() {
+  const [featuredGlobalCharacters, setFeaturedGlobalCharacters] = useState<
+    FoodCharacterProfile[]
+  >([]);
+  const [loadingGlobalCharacters, setLoadingGlobalCharacters] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedGlobalCharacters() {
+      try {
+        const profiles = await getFeaturedFoodCharacterProfilesByCategoryFromSanity("global");
+
+        if (!cancelled) {
+          setFeaturedGlobalCharacters(profiles);
+          setLoadingGlobalCharacters(false);
+        }
+      } catch (error) {
+        console.error("Global food character fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedGlobalCharacters([]);
+          setLoadingGlobalCharacters(false);
+        }
+      }
+    }
+
+    loadFeaturedGlobalCharacters();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-global"
@@ -446,14 +460,25 @@ function FeaturedGlobalCharacters() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredGlobalCharacters.length > 0 ? (
+          {loadingGlobalCharacters ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Global food stories are being prepared for the next Food Theatre table.
+              </p>
+            </div>
+          ) : featuredGlobalCharacters.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredGlobalCharacters.map((character) => (
                 <GlobalPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (
-            <EmptyGlobalState />
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                New global tables are being shaped. Come back soon to discover cultural food
+                stories, shared rituals, and memorable hosted moments.
+              </p>
+            </div>
           )}
         </Reveal>
       </div>

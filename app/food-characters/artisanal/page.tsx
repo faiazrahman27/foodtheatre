@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -25,6 +25,8 @@ const artisanalAccentSoftColor =
   artisanalCategory?.accentSoftColor ?? "rgba(122, 115, 181, 0.16)";
 const artisanalHeroImage =
   artisanalCategory?.heroImage ?? "/media/home/character-artisanal.jpg";
+const artisanalHeroImageAlt =
+  artisanalCategory?.heroImageAlt ?? "Artisanal Food Character shaping handmade food";
 
 type ButtonTone =
   | "denimPomodori"
@@ -76,8 +78,6 @@ const artisanalSignals = [
   { label: "Memorable Tastings", color: "var(--ft-citrine)" },
 ];
 
-const featuredArtisans = getFeaturedFoodCharacterProfilesByCategory("artisanal");
-
 const guestPath = [
   {
     step: "01",
@@ -124,12 +124,7 @@ function DiscoverButton({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group inline-flex h-10 min-w-[138px] items-center justify-center rounded-full border-2 border-black/70 bg-white px-7 text-xs font-black text-black transition duration-300 hover:-translate-y-0.5 hover:text-white focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
-      style={
-        {
-          "--hover-border": artisanalAccentColor,
-        } as React.CSSProperties
-      }
+      className="group inline-flex h-10 min-w-[138px] items-center justify-center rounded-full border-2 border-black/70 bg-white px-7 text-xs font-black text-black transition duration-300 hover:-translate-y-0.5 hover:border-[var(--ft-viola)] hover:bg-[var(--ft-viola)] hover:text-white focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
     >
       Discover
     </Link>
@@ -322,7 +317,7 @@ function ArtisanalHero() {
 
               <SquarePhoto
                 src={artisanalHeroImage}
-                alt="Artisanal Food Character shaping handmade food"
+                alt={artisanalHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -411,26 +406,38 @@ function ArtisanPosterCard({ character }: { character: FoodCharacterProfile }) {
   );
 }
 
-function EmptyArtisanState() {
-  return (
-    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-        No Artisanal Characters yet
-      </p>
-
-      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
-        Artisanal profiles will appear here once they are added.
-      </h3>
-
-      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
-        This section is ready for Sanity. When Artisanal Food Characters are published, their
-        names, card headlines, transparent PNG cutouts, and profile links will render here.
-      </p>
-    </div>
-  );
-}
-
 function FeaturedArtisans() {
+  const [featuredArtisans, setFeaturedArtisans] = useState<FoodCharacterProfile[]>([]);
+  const [loadingArtisans, setLoadingArtisans] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedArtisans() {
+      try {
+        const profiles = await getFeaturedFoodCharacterProfilesByCategoryFromSanity("artisanal");
+
+        if (!cancelled) {
+          setFeaturedArtisans(profiles);
+          setLoadingArtisans(false);
+        }
+      } catch (error) {
+        console.error("Artisanal food character fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedArtisans([]);
+          setLoadingArtisans(false);
+        }
+      }
+    }
+
+    loadFeaturedArtisans();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-artisans"
@@ -451,14 +458,25 @@ function FeaturedArtisans() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredArtisans.length > 0 ? (
+          {loadingArtisans ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Handmade food stories are being prepared for the next Food Theatre table.
+              </p>
+            </div>
+          ) : featuredArtisans.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredArtisans.map((character) => (
                 <ArtisanPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (
-            <EmptyArtisanState />
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                New maker-led tables are being shaped. Come back soon to discover handmade food,
+                craft stories, and small-batch experiences.
+              </p>
+            </div>
           )}
         </Reveal>
       </div>

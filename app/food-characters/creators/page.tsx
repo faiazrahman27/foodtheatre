@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -77,8 +77,6 @@ const creatorSignals = [
   { label: "Beautiful Plates", color: "var(--ft-citrine)" },
   { label: "Memorable Food Stories", color: "var(--ft-denim)" },
 ];
-
-const featuredCreators = getFeaturedFoodCharacterProfilesByCategory("creators");
 
 const guestPath = [
   {
@@ -409,6 +407,40 @@ function CreatorPosterCard({ character }: { character: FoodCharacterProfile }) {
 }
 
 function FeaturedCreators() {
+  const [featuredCreators, setFeaturedCreators] = useState<FoodCharacterProfile[]>([]);
+  const [loadingCreators, setLoadingCreators] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedCreators() {
+      setLoadingCreators(true);
+
+      try {
+        const sanityCreators =
+          await getFeaturedFoodCharacterProfilesByCategoryFromSanity("creators");
+
+        if (!cancelled) {
+          setFeaturedCreators(sanityCreators);
+          setLoadingCreators(false);
+        }
+      } catch (error) {
+        console.error("Sanity creator category fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedCreators([]);
+          setLoadingCreators(false);
+        }
+      }
+    }
+
+    loadFeaturedCreators();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-creators"
@@ -429,7 +461,13 @@ function FeaturedCreators() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredCreators.length > 0 ? (
+          {loadingCreators ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Checking published Creator profiles in Sanity.
+              </p>
+            </div>
+          ) : featuredCreators.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredCreators.map((character) => (
                 <CreatorPosterCard key={character.id} character={character} />
@@ -438,7 +476,7 @@ function FeaturedCreators() {
           ) : (
             <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
               <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
-                Creator profiles will appear here when published.
+                Creator profiles will appear here when published in Sanity.
               </p>
             </div>
           )}

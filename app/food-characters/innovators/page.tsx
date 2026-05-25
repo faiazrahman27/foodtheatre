@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -25,6 +25,9 @@ const innovatorAccentSoftColor =
   innovatorCategory?.accentSoftColor ?? "rgba(238, 84, 46, 0.16)";
 const innovatorHeroImage =
   innovatorCategory?.heroImage ?? "/media/home/character-innovators.jpg";
+const innovatorHeroImageAlt =
+  innovatorCategory?.heroImageAlt ??
+  "Innovator Food Character preparing a new food experience";
 
 type ButtonTone =
   | "denimPomodori"
@@ -75,8 +78,6 @@ const innovatorSignals = [
   { label: "Creative Food Formats", color: "var(--ft-pomodori)" },
   { label: "Memorable Experiences", color: "var(--ft-citrine)" },
 ];
-
-const featuredInnovators = getFeaturedFoodCharacterProfilesByCategory("innovators");
 
 const guestPath = [
   {
@@ -317,7 +318,7 @@ function InnovatorHero() {
 
               <SquarePhoto
                 src={innovatorHeroImage}
-                alt="Innovator Food Character preparing a new food experience"
+                alt={innovatorHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -407,6 +408,37 @@ function InnovatorPosterCard({ character }: { character: FoodCharacterProfile })
 }
 
 function InnovatorCharacterWall() {
+  const [featuredInnovators, setFeaturedInnovators] = useState<FoodCharacterProfile[]>([]);
+  const [loadingInnovators, setLoadingInnovators] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedInnovators() {
+      try {
+        const profiles = await getFeaturedFoodCharacterProfilesByCategoryFromSanity("innovators");
+
+        if (!cancelled) {
+          setFeaturedInnovators(profiles);
+          setLoadingInnovators(false);
+        }
+      } catch (error) {
+        console.error("Innovator food character fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedInnovators([]);
+          setLoadingInnovators(false);
+        }
+      }
+    }
+
+    loadFeaturedInnovators();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-innovators"
@@ -427,7 +459,13 @@ function InnovatorCharacterWall() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredInnovators.length > 0 ? (
+          {loadingInnovators ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Fresh Innovator stories are being prepared for the next Food Theatre table.
+              </p>
+            </div>
+          ) : featuredInnovators.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredInnovators.map((character) => (
                 <InnovatorPosterCard key={character.id} character={character} />
@@ -436,7 +474,8 @@ function InnovatorCharacterWall() {
           ) : (
             <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
               <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
-                Innovator profiles will appear here when published.
+                New Innovator tables are being shaped. Come back soon to discover bold tastings,
+                live formats, and fresh food ideas.
               </p>
             </div>
           )}

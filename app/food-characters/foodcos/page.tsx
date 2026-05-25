@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -25,6 +25,8 @@ const foodcosAccentSoftColor =
   foodcosCategory?.accentSoftColor ?? "rgba(0, 114, 174, 0.16)";
 const foodcosHeroImage =
   foodcosCategory?.heroImage ?? "/media/home/character-foodcos.jpg";
+const foodcosHeroImageAlt =
+  foodcosCategory?.heroImageAlt ?? "FoodCo.s Character presenting a branded food experience";
 
 type ButtonTone =
   | "denimPomodori"
@@ -75,8 +77,6 @@ const foodcoSignals = [
   { label: "Catered Experiences", color: "var(--ft-denim)" },
   { label: "Memorable Food Brands", color: "var(--ft-citrine)" },
 ];
-
-const featuredFoodcos = getFeaturedFoodCharacterProfilesByCategory("foodcos");
 
 const guestPath = [
   {
@@ -317,7 +317,7 @@ function FoodcosHero() {
 
               <SquarePhoto
                 src={foodcosHeroImage}
-                alt="FoodCo.s Character presenting a branded food experience"
+                alt={foodcosHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -406,26 +406,38 @@ function FoodcosPosterCard({ character }: { character: FoodCharacterProfile }) {
   );
 }
 
-function EmptyFoodcosState() {
-  return (
-    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-        No FoodCo.s yet
-      </p>
-
-      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
-        FoodCo.s profiles will appear here once they are added.
-      </h3>
-
-      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
-        This section is ready for Sanity. When FoodCo.s are published, their names, card headlines,
-        transparent PNG cutouts, and profile links will render here.
-      </p>
-    </div>
-  );
-}
-
 function FeaturedFoodcos() {
+  const [featuredFoodcos, setFeaturedFoodcos] = useState<FoodCharacterProfile[]>([]);
+  const [loadingFoodcos, setLoadingFoodcos] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedFoodcos() {
+      try {
+        const profiles = await getFeaturedFoodCharacterProfilesByCategoryFromSanity("foodcos");
+
+        if (!cancelled) {
+          setFeaturedFoodcos(profiles);
+          setLoadingFoodcos(false);
+        }
+      } catch (error) {
+        console.error("FoodCo.s food character fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedFoodcos([]);
+          setLoadingFoodcos(false);
+        }
+      }
+    }
+
+    loadFeaturedFoodcos();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-foodcos"
@@ -447,14 +459,25 @@ function FeaturedFoodcos() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredFoodcos.length > 0 ? (
+          {loadingFoodcos ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Brand tables are being prepared for the next Food Theatre moment.
+              </p>
+            </div>
+          ) : featuredFoodcos.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredFoodcos.map((character) => (
                 <FoodcosPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (
-            <EmptyFoodcosState />
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                New restaurant stories, product tastings, and hosted brand tables are being shaped.
+                Come back soon to discover the next FoodCo.s moments.
+              </p>
+            </div>
           )}
         </Reveal>
       </div>

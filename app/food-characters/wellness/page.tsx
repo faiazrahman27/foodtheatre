@@ -3,15 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
-  getFeaturedFoodCharacterProfilesByCategory,
   getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
+import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -25,6 +25,8 @@ const wellnessAccentSoftColor =
   wellnessCategory?.accentSoftColor ?? "rgba(55, 175, 135, 0.16)";
 const wellnessHeroImage =
   wellnessCategory?.heroImage ?? "/media/home/character-wellness.jpg";
+const wellnessHeroImageAlt =
+  wellnessCategory?.heroImageAlt ?? "Wellness Food Character preparing a fresh food moment";
 
 type ButtonTone =
   | "denimPomodori"
@@ -75,9 +77,6 @@ const wellnessSignals = [
   { label: "Natural Ingredients", color: "var(--ft-menta)" },
   { label: "Memorable Wellness Food", color: "var(--ft-citrine)" },
 ];
-
-const featuredWellnessCharacters =
-  getFeaturedFoodCharacterProfilesByCategory("wellness");
 
 const guestPath = [
   {
@@ -318,7 +317,7 @@ function WellnessHero() {
 
               <SquarePhoto
                 src={wellnessHeroImage}
-                alt="Wellness Food Character preparing a fresh food moment"
+                alt={wellnessHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"
@@ -407,26 +406,40 @@ function WellnessPosterCard({ character }: { character: FoodCharacterProfile }) 
   );
 }
 
-function EmptyWellnessState() {
-  return (
-    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-        No Wellness Characters yet
-      </p>
-
-      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
-        Wellness profiles will appear here once they are added.
-      </h3>
-
-      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
-        This section is ready for Sanity. When Wellness Characters are published, their names, card
-        headlines, transparent PNG cutouts, and profile links will render here.
-      </p>
-    </div>
-  );
-}
-
 function FeaturedWellnessCharacters() {
+  const [featuredWellnessCharacters, setFeaturedWellnessCharacters] = useState<
+    FoodCharacterProfile[]
+  >([]);
+  const [loadingWellnessCharacters, setLoadingWellnessCharacters] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeaturedWellnessCharacters() {
+      try {
+        const profiles = await getFeaturedFoodCharacterProfilesByCategoryFromSanity("wellness");
+
+        if (!cancelled) {
+          setFeaturedWellnessCharacters(profiles);
+          setLoadingWellnessCharacters(false);
+        }
+      } catch (error) {
+        console.error("Wellness food character fetch failed:", error);
+
+        if (!cancelled) {
+          setFeaturedWellnessCharacters([]);
+          setLoadingWellnessCharacters(false);
+        }
+      }
+    }
+
+    loadFeaturedWellnessCharacters();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       id="featured-wellness"
@@ -447,14 +460,25 @@ function FeaturedWellnessCharacters() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          {featuredWellnessCharacters.length > 0 ? (
+          {loadingWellnessCharacters ? (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Fresh food moments are being prepared for the next Food Theatre table.
+              </p>
+            </div>
+          ) : featuredWellnessCharacters.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredWellnessCharacters.map((character) => (
                 <WellnessPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (
-            <EmptyWellnessState />
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                New fresh tables are being shaped. Come back soon to discover balanced food moments,
+                seasonal flavours, and feel-good hosted experiences.
+              </p>
+            </div>
           )}
         </Reveal>
       </div>
