@@ -383,6 +383,10 @@ function CreatorPosterCard({
           {character.title}
         </h3>
 
+        <p className="absolute bottom-[58px] left-[-18px] z-30 max-w-[150px] text-[0.76rem] font-black uppercase leading-[0.95] tracking-[-0.035em] text-black/62">
+          {character.name}
+        </p>
+
         <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
           <Image
             src={character.image}
