@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
+import { GradientBackground } from "@/components/ui/paper-design-shader-background";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
@@ -177,54 +178,78 @@ const calendarFacets = [
   }
 ];
 
-const calendarHighlights: Record<
-  string,
+const calendarEvents: Record<
+  number,
   {
     label: string;
-    calendarLabel: string;
+    shortLabel: string;
+    title: string;
+    time: string;
+    place: string;
     color: string;
     textClassName: string;
   }
 > = {
-  "03": {
+  3: {
     label: "Dinner",
-    calendarLabel: "Dinner",
+    shortLabel: "Dinner",
+    title: "Seasonal character dinner",
+    time: "19:30",
+    place: "Hosted table",
     color: "var(--ft-pomodori)",
     textClassName: "text-white"
   },
-  "06": {
+  6: {
     label: "Tasting",
-    calendarLabel: "Tasting",
+    shortLabel: "Taste",
+    title: "Guided tasting table",
+    time: "18:00",
+    place: "Food Stage",
     color: "var(--ft-citrine)",
     textClassName: "text-black"
   },
-  "09": {
+  9: {
     label: "Stage",
-    calendarLabel: "Stage",
+    shortLabel: "Stage",
+    title: "Open stage food night",
+    time: "20:00",
+    place: "Theatre space",
     color: "var(--ft-denim)",
     textClassName: "text-white"
   },
-  "12": {
+  12: {
     label: "Workshop",
-    calendarLabel: "Work\nshop",
+    shortLabel: "Work",
+    title: "Hands-on food workshop",
+    time: "15:00",
+    place: "Maker table",
     color: "var(--ft-menta)",
     textClassName: "text-white"
   },
-  "17": {
+  17: {
     label: "Pairing",
-    calendarLabel: "Pairing",
+    shortLabel: "Pair",
+    title: "Flavour pairing session",
+    time: "18:30",
+    place: "Tasting room",
     color: "var(--ft-viola)",
     textClassName: "text-white"
   },
-  "21": {
+  21: {
     label: "Market",
-    calendarLabel: "Market",
+    shortLabel: "Market",
+    title: "Character market table",
+    time: "11:00",
+    place: "Food courtyard",
     color: "var(--ft-blush)",
     textClassName: "text-black"
   },
-  "26": {
+  26: {
     label: "Chef night",
-    calendarLabel: "Chef\nnight",
+    shortLabel: "Chef",
+    title: "Chef-led night",
+    time: "20:30",
+    place: "Private table",
     color: "var(--ft-pomodori)",
     textClassName: "text-white"
   }
@@ -238,6 +263,23 @@ const calendarLegend = [
   { label: "Pairing", color: "var(--ft-viola)", textClassName: "text-white" },
   { label: "Market", color: "var(--ft-blush)", textClassName: "text-black" }
 ];
+
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+
+const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const experienceCards = [
   {
@@ -423,9 +465,35 @@ const trendingItems = [
   }
 ] as const;
 
-const calendarDays = Array.from({ length: 31 }, (_, index) => ({
-  number: String(index + 1).padStart(2, "0")
-}));
+function getCalendarCells(year: number, month: number) {
+  const firstDay = new Date(year, month, 1).getDay();
+  const mondayFirstOffset = (firstDay + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPreviousMonth = new Date(year, month, 0).getDate();
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const dayNumber = index - mondayFirstOffset + 1;
+
+    if (dayNumber < 1) {
+      return {
+        number: daysInPreviousMonth + dayNumber,
+        inCurrentMonth: false
+      };
+    }
+
+    if (dayNumber > daysInMonth) {
+      return {
+        number: dayNumber - daysInMonth,
+        inCurrentMonth: false
+      };
+    }
+
+    return {
+      number: dayNumber,
+      inCurrentMonth: true
+    };
+  });
+}
 
 function BrandButton({
   href,
@@ -866,24 +934,69 @@ function TrendingShowcase() {
 }
 
 function CalendarPreview() {
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+  const [selectedDay, setSelectedDay] = useState(3);
+
+  const year = visibleMonth.getFullYear();
+  const month = visibleMonth.getMonth();
+
+  const calendarCells = useMemo(() => getCalendarCells(year, month), [year, month]);
+  const selectedEvent = calendarEvents[selectedDay];
+  const monthTitle = `${monthNames[month]} ${year}`;
+  const selectedDateLabel = `${String(selectedDay).padStart(2, "0")} ${monthNames[month]} ${year}`;
+
+  const changeMonth = (direction: -1 | 1) => {
+    setVisibleMonth((currentMonth) => {
+      return new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth() + direction,
+        1
+      );
+    });
+  };
+
   return (
-    <div className="sticky top-28 rounded-[2.2rem] border border-black/10 bg-[#fffdf8] p-5 shadow-[0_18px_55px_rgba(17,17,17,0.06)] sm:p-7">
-      <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-5">
-        <div>
+    <div className="lg:sticky lg:top-28 rounded-[2.2rem] border border-black/10 bg-[#fffdf8] p-4 shadow-[0_18px_55px_rgba(17,17,17,0.06)] sm:p-7">
+      <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-5">
+        <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
             Experience calendar
           </p>
-          <h3 className="ft-display mt-2 text-4xl leading-none sm:text-5xl">
+          <h3 className="ft-display mt-2 max-w-full text-[clamp(2rem,8vw,3rem)] leading-[0.95]">
             Find food moments
           </h3>
+          <p className="mt-3 text-sm font-black uppercase tracking-[0.16em] text-black/44">
+            {monthTitle}
+          </p>
         </div>
 
-        <LocalLogo className="h-16 w-16 object-contain" />
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => changeMonth(-1)}
+            aria-label="Show previous month"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-lg font-black text-black transition hover:bg-[var(--ft-citrine)]"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            onClick={() => changeMonth(1)}
+            aria-label="Show next month"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-lg font-black text-black transition hover:bg-[var(--ft-citrine)]"
+          >
+            ›
+          </button>
+        </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-2 text-center text-xs font-black uppercase tracking-[0.12em] text-black/38">
-        {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-          <span key={`${day}-${index}`} className="flex flex-col items-center gap-1">
+      <div className="mt-5 grid grid-cols-7 gap-1.5 text-center text-[0.62rem] font-black uppercase tracking-[0.08em] text-black/42 sm:gap-2 sm:text-xs">
+        {weekdayLabels.map((day, index) => (
+          <span key={day} className="flex flex-col items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: brandValues[index % brandValues.length].color }}
@@ -893,41 +1006,90 @@ function CalendarPreview() {
         ))}
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-2">
-        {calendarDays.map((day, index) => {
-          const highlight = calendarHighlights[day.number];
+      <div className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2">
+        {calendarCells.map((day, index) => {
+          const event = day.inCurrentMonth ? calendarEvents[day.number] : undefined;
+          const isSelected = day.inCurrentMonth && selectedDay === day.number;
 
           return (
-            <motion.div
-              key={day.number}
+            <motion.button
+              key={`${day.inCurrentMonth ? "current" : "outside"}-${index}-${day.number}`}
+              type="button"
+              disabled={!day.inCurrentMonth}
+              onClick={() => setSelectedDay(day.number)}
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.26, delay: index * 0.012 }}
-              className={`flex aspect-square flex-col justify-between rounded-2xl border p-2 text-left text-xs font-black transition duration-300 ${
-                highlight
-                  ? `border-transparent ${highlight.textClassName}`
-                  : "border-black/10 bg-white text-black/50 hover:border-black/20"
+              transition={{ duration: 0.22, delay: index * 0.006 }}
+              className={`flex aspect-square min-w-0 flex-col justify-between overflow-hidden rounded-[1rem] border p-1.5 text-left font-black transition duration-300 sm:rounded-2xl sm:p-2 ${
+                day.inCurrentMonth
+                  ? "bg-white text-black hover:border-black/24"
+                  : "cursor-default border-black/5 bg-black/[0.025] text-black/18"
+              } ${
+                isSelected
+                  ? "border-black shadow-[0_10px_28px_rgba(17,17,17,0.12)]"
+                  : "border-black/10"
               }`}
-              style={highlight ? { backgroundColor: highlight.color } : undefined}
             >
-              <span>{day.number}</span>
+              <span className="text-[0.72rem] leading-none sm:text-sm">
+                {String(day.number).padStart(2, "0")}
+              </span>
 
-              {highlight ? (
-                <span className="flex flex-col text-[0.5rem] uppercase leading-[0.95] tracking-[0.04em] opacity-90 sm:text-[0.54rem]">
-                  {highlight.calendarLabel.split("\n").map((line) => (
-                    <span key={`${day.number}-${line}`}>{line}</span>
-                  ))}
+              {event ? (
+                <span
+                  className={`max-w-full truncate rounded-full px-1 py-0.5 text-center text-[0.43rem] uppercase leading-none tracking-[0.02em] sm:px-1.5 sm:py-1 sm:text-[0.55rem] ${event.textClassName}`}
+                  style={{ backgroundColor: event.color }}
+                >
+                  {event.shortLabel}
                 </span>
-              ) : (
+              ) : day.inCurrentMonth ? (
                 <span className="h-1.5 w-1.5 rounded-full bg-black/12" />
+              ) : (
+                <span />
               )}
-            </motion.div>
+            </motion.button>
           );
         })}
       </div>
 
-      <div className="mt-6 border-t border-black/10 pt-5">
+      <div className="mt-5 rounded-[1.5rem] border border-black/10 bg-white px-4 py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-black/38">
+              Selected date
+            </p>
+            <p className="mt-1 text-lg font-black leading-tight text-black sm:text-xl">
+              {selectedDateLabel}
+            </p>
+          </div>
+
+          {selectedEvent ? (
+            <span
+              className={`w-fit rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.12em] ${selectedEvent.textClassName}`}
+              style={{ backgroundColor: selectedEvent.color }}
+            >
+              {selectedEvent.label}
+            </span>
+          ) : null}
+        </div>
+
+        {selectedEvent ? (
+          <div className="mt-4 border-t border-black/10 pt-4">
+            <h4 className="ft-display text-[clamp(1.8rem,6vw,2.8rem)] leading-[0.98]">
+              {selectedEvent.title}
+            </h4>
+            <p className="mt-3 text-sm font-semibold leading-7 text-black/60">
+              {selectedEvent.time} · {selectedEvent.place}
+            </p>
+          </div>
+        ) : (
+          <p className="mt-4 border-t border-black/10 pt-4 text-sm font-semibold leading-7 text-black/58">
+            No highlighted food moment on this date yet. Choose another date or explore the month.
+          </p>
+        )}
+      </div>
+
+      <div className="mt-5 border-t border-black/10 pt-5">
         <p className="text-sm font-semibold leading-7 text-black/58">
           Choose a date and discover dinners, tastings, workshops, markets, pairings, and chef-led
           nights shaped by Food Characters.
@@ -937,7 +1099,7 @@ function CalendarPreview() {
           {calendarLegend.map((item) => (
             <span
               key={item.label}
-              className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.12em] ${item.textClassName}`}
+              className={`rounded-full px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.1em] sm:px-4 sm:text-xs ${item.textClassName}`}
               style={{ backgroundColor: item.color }}
             >
               {item.label}
@@ -1401,8 +1563,13 @@ export function HomePageClient() {
         </div>
       </section>
 
-      <section id="join" className="scroll-mt-28 bg-white py-16 sm:py-24">
-        <div className="ft-container">
+      <section
+        id="join"
+        className="relative isolate scroll-mt-28 overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
+      >
+        <GradientBackground />
+
+        <div className="ft-container relative">
           <SectionIntro
             label="Join the movement"
             title="Get closer to the next Food Theatre moment."
