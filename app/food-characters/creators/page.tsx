@@ -6,17 +6,24 @@ import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
+import {
+  getFeaturedFoodCharacterProfilesByCategory,
+  getFoodCharacterCategory,
+  getFoodCharacterProfileUrl,
+  type FoodCharacterProfile,
+} from "@/lib/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-
-  creatorHero: "/media/home/character-creators.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
-
-  miraDale: "/media/food-characters/creators/mira-dale-cutout.png",
-  enzoRay: "/media/food-characters/creators/enzo-ray-cutout.png",
-  salmaNoor: "/media/food-characters/creators/salma-noor-cutout.png",
 };
+
+const creatorCategory = getFoodCharacterCategory("creators");
+const creatorAccentColor = creatorCategory?.accentColor ?? "var(--ft-citrine)";
+const creatorAccentSoftColor =
+  creatorCategory?.accentSoftColor ?? "rgba(239, 209, 30, 0.18)";
+const creatorHeroImage =
+  creatorCategory?.heroImage ?? "/media/home/character-creators.jpg";
 
 type ButtonTone =
   | "denimPomodori"
@@ -68,35 +75,7 @@ const creatorSignals = [
   { label: "Memorable Food Stories", color: "var(--ft-denim)" },
 ];
 
-const featuredCreators = [
-  {
-    name: "Mira Dale",
-    role: "Food Storyteller",
-    city: "Bologna",
-    image: media.miraDale,
-    title: "Food Story",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-  {
-    name: "Enzo Ray",
-    role: "Food Film Creator",
-    city: "Milan",
-    image: media.enzoRay,
-    title: "Visual Table",
-    shape: "frame",
-    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
-  },
-  {
-    name: "Salma Noor",
-    role: "Table Stylist",
-    city: "Paris",
-    image: media.salmaNoor,
-    title: "Styled Scene",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-] as const;
+const featuredCreators = getFeaturedFoodCharacterProfilesByCategory("creators");
 
 const guestPath = [
   {
@@ -266,7 +245,10 @@ function CreatorHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-citrine)]/24 blur-3xl" />
+        <div
+          className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full blur-3xl"
+          style={{ backgroundColor: creatorAccentSoftColor }}
+        />
         <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-denim)]/12 blur-3xl" />
         <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-blush)]/18 blur-3xl" />
       </div>
@@ -302,7 +284,10 @@ function CreatorHero() {
                 </span>
               </h1>
 
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-citrine)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
+              <p
+                className="mt-8 max-w-3xl border-l-4 pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10"
+                style={{ borderColor: creatorAccentColor }}
+              >
                 Discover Food Characters turning flavour, visuals, hosting, and atmosphere into
                 food moments guests want to see, join, and remember.
               </p>
@@ -323,11 +308,14 @@ function CreatorHero() {
 
           <Reveal delay={0.12}>
             <div className="relative mx-auto w-full max-w-[390px] lg:mx-0">
-              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-citrine)]" />
+              <div
+                className="absolute -right-4 -top-4 h-20 w-20 rounded-full"
+                style={{ backgroundColor: creatorAccentColor }}
+              />
               <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-denim)]" />
 
               <SquarePhoto
-                src={media.creatorHero}
+                src={creatorHeroImage}
                 alt="Creator Food Character shaping a visual food story"
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
@@ -342,11 +330,20 @@ function CreatorHero() {
   );
 }
 
-function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+function PosterShape({
+  variant,
+  accentColor,
+}: {
+  variant: FoodCharacterProfile["cardShape"];
+  accentColor: string;
+}) {
   if (variant === "frame") {
     return (
       <>
-        <div className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem] bg-[var(--ft-citrine)]">
+        <div
+          className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem]"
+          style={{ backgroundColor: accentColor }}
+        >
           <div className="absolute -right-10 top-7 h-[190px] w-[190px] rounded-full bg-white" />
           <div className="absolute -bottom-8 -left-8 h-[82px] w-[82px] rounded-full bg-white" />
         </div>
@@ -358,18 +355,23 @@ function PosterShape({ variant }: { variant: "circle" | "frame" }) {
 
   return (
     <>
-      <div className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full bg-[var(--ft-citrine)]" />
-      <div className="absolute right-4 top-[38px] h-8 w-8 rounded-full bg-[var(--ft-citrine)]" />
-      <div className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full bg-[var(--ft-citrine)]" />
+      <div
+        className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute right-4 top-[38px] h-8 w-8 rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full"
+        style={{ backgroundColor: accentColor }}
+      />
     </>
   );
 }
 
-function CreatorPosterCard({
-  character,
-}: {
-  character: (typeof featuredCreators)[number];
-}) {
+function CreatorPosterCard({ character }: { character: FoodCharacterProfile }) {
   return (
     <motion.article
       whileHover={{ y: -6 }}
@@ -377,20 +379,20 @@ function CreatorPosterCard({
       className="group flex min-h-[390px] flex-col items-center"
     >
       <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
-        <PosterShape variant={character.shape} />
+        <PosterShape variant={character.cardShape} accentColor={character.accentColor} />
 
         <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
-          {character.title}
+          {character.cardHeadline}
         </h3>
 
         <p className="absolute bottom-[58px] left-[-18px] z-30 max-w-[150px] text-[0.76rem] font-black uppercase leading-[0.95] tracking-[-0.035em] text-black/62">
           {character.name}
         </p>
 
-        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+        <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
-            src={character.image}
-            alt={`${character.name}, ${character.role}`}
+            src={character.cutoutImage}
+            alt={character.cutoutImageAlt}
             fill
             sizes="190px"
             className="object-contain object-bottom grayscale transition duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
@@ -398,7 +400,7 @@ function CreatorPosterCard({
         </div>
       </div>
 
-      <DiscoverButton href="/#experiences" />
+      <DiscoverButton href={getFoodCharacterProfileUrl(character)} />
     </motion.article>
   );
 }
@@ -424,11 +426,19 @@ function FeaturedCreators() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
-            {featuredCreators.map((character) => (
-              <CreatorPosterCard key={character.name} character={character} />
-            ))}
-          </div>
+          {featuredCreators.length > 0 ? (
+            <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+              {featuredCreators.map((character) => (
+                <CreatorPosterCard key={character.id} character={character} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Creator profiles will appear here when published.
+              </p>
+            </div>
+          )}
         </Reveal>
       </div>
     </section>
@@ -532,7 +542,8 @@ function JoinCreators() {
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-citrine)] p-5 text-black sm:p-6 lg:p-8"
+              className="relative overflow-hidden rounded-[2rem] border border-black/10 p-5 text-black sm:p-6 lg:p-8"
+              style={{ backgroundColor: creatorAccentColor }}
             >
               <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/34" />
               <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-denim)]/70" />

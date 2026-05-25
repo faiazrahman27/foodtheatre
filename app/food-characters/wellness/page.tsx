@@ -6,16 +6,17 @@ import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
+import {
+  getFeaturedFoodCharacterProfilesByCategory,
+  getFoodCharacterProfileUrl,
+  type FoodCharacterProfile,
+} from "@/lib/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
 
   wellnessHero: "/media/home/character-wellness.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
-
-  avaLumi: "/media/food-characters/wellness/ava-lumi-cutout.png",
-  noahVale: "/media/food-characters/wellness/noah-vale-cutout.png",
-  mayaRen: "/media/food-characters/wellness/maya-ren-cutout.png",
 };
 
 type ButtonTone =
@@ -68,35 +69,8 @@ const wellnessSignals = [
   { label: "Memorable Wellness Food", color: "var(--ft-citrine)" },
 ];
 
-const featuredWellnessCharacters = [
-  {
-    name: "Ava Lumi",
-    role: "Seasonal Food Host",
-    city: "Copenhagen",
-    image: media.avaLumi,
-    title: "Fresh Tables",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-  {
-    name: "Noah Vale",
-    role: "Plant-Forward Cook",
-    city: "Amsterdam",
-    image: media.noahVale,
-    title: "Plant Plates",
-    shape: "frame",
-    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
-  },
-  {
-    name: "Maya Ren",
-    role: "Breakfast Experience Host",
-    city: "Vienna",
-    image: media.mayaRen,
-    title: "Morning Ritual",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-] as const;
+const featuredWellnessCharacters =
+  getFeaturedFoodCharacterProfilesByCategory("wellness");
 
 const guestPath = [
   {
@@ -342,7 +316,7 @@ function WellnessHero() {
   );
 }
 
-function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+function PosterShape({ variant }: { variant: FoodCharacterProfile["cardShape"] }) {
   if (variant === "frame") {
     return (
       <>
@@ -365,11 +339,7 @@ function PosterShape({ variant }: { variant: "circle" | "frame" }) {
   );
 }
 
-function WellnessPosterCard({
-  character,
-}: {
-  character: (typeof featuredWellnessCharacters)[number];
-}) {
+function WellnessPosterCard({ character }: { character: FoodCharacterProfile }) {
   return (
     <motion.article
       whileHover={{ y: -6 }}
@@ -377,19 +347,19 @@ function WellnessPosterCard({
       className="group flex min-h-[390px] flex-col items-center"
     >
       <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
-        <PosterShape variant={character.shape} />
+        <PosterShape variant={character.cardShape} />
 
         <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
-          {character.title}
+          {character.cardHeadline}
         </h3>
 
         <p className="absolute bottom-[58px] left-[-18px] z-30 max-w-[150px] text-[0.76rem] font-black uppercase leading-[0.95] tracking-[-0.035em] text-black/62">
           {character.name}
         </p>
 
-        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+        <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
-            src={character.image}
+            src={character.cutoutImage}
             alt={`${character.name}, ${character.role}`}
             fill
             sizes="190px"
@@ -398,8 +368,27 @@ function WellnessPosterCard({
         </div>
       </div>
 
-      <DiscoverButton href="/#experiences" />
+      <DiscoverButton href={getFoodCharacterProfileUrl(character)} />
     </motion.article>
+  );
+}
+
+function EmptyWellnessState() {
+  return (
+    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
+        No Wellness Characters yet
+      </p>
+
+      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
+        Wellness profiles will appear here once they are added.
+      </h3>
+
+      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
+        This section is ready for Sanity. When Wellness Characters are published, their names, card
+        headlines, transparent PNG cutouts, and profile links will render here.
+      </p>
+    </div>
   );
 }
 
@@ -424,11 +413,15 @@ function FeaturedWellnessCharacters() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
-            {featuredWellnessCharacters.map((character) => (
-              <WellnessPosterCard key={character.name} character={character} />
-            ))}
-          </div>
+          {featuredWellnessCharacters.length > 0 ? (
+            <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+              {featuredWellnessCharacters.map((character) => (
+                <WellnessPosterCard key={character.slug} character={character} />
+              ))}
+            </div>
+          ) : (
+            <EmptyWellnessState />
+          )}
         </Reveal>
       </div>
     </section>

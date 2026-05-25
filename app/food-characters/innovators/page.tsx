@@ -6,17 +6,24 @@ import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
+import {
+  getFeaturedFoodCharacterProfilesByCategory,
+  getFoodCharacterCategory,
+  getFoodCharacterProfileUrl,
+  type FoodCharacterProfile,
+} from "@/lib/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-
-  innovatorHero: "/media/home/character-innovators.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
-
-  linaPark: "/media/food-characters/innovators/lina-park-cutout.png",
-  marcoElia: "/media/food-characters/innovators/marco-elia-cutout.png",
-  nadiaSol: "/media/food-characters/innovators/nadia-sol-cutout.png",
 };
+
+const innovatorCategory = getFoodCharacterCategory("innovators");
+const innovatorAccentColor = innovatorCategory?.accentColor ?? "var(--ft-pomodori)";
+const innovatorAccentSoftColor =
+  innovatorCategory?.accentSoftColor ?? "rgba(238, 84, 46, 0.16)";
+const innovatorHeroImage =
+  innovatorCategory?.heroImage ?? "/media/home/character-innovators.jpg";
 
 type ButtonTone =
   | "denimPomodori"
@@ -68,32 +75,7 @@ const innovatorSignals = [
   { label: "Memorable Experiences", color: "var(--ft-citrine)" },
 ];
 
-const featuredInnovators = [
-  {
-    name: "Lina Park",
-    role: "Sensory Chef",
-    image: media.linaPark,
-    title: "Rethink Taste",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-  {
-    name: "Marco Elia",
-    role: "Fermentation Maker",
-    image: media.marcoElia,
-    title: "Living Flavour",
-    shape: "frame",
-    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
-  },
-  {
-    name: "Nadia Sol",
-    role: "Future Dining Host",
-    image: media.nadiaSol,
-    title: "Future Table",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-] as const;
+const featuredInnovators = getFeaturedFoodCharacterProfilesByCategory("innovators");
 
 const guestPath = [
   {
@@ -263,7 +245,10 @@ function InnovatorHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-pomodori)]/18 blur-3xl" />
+        <div
+          className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full blur-3xl"
+          style={{ backgroundColor: innovatorAccentSoftColor }}
+        />
         <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-citrine)]/16 blur-3xl" />
         <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-blush)]/18 blur-3xl" />
       </div>
@@ -299,7 +284,10 @@ function InnovatorHero() {
                 </span>
               </h1>
 
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-pomodori)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
+              <p
+                className="mt-8 max-w-3xl border-l-4 pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10"
+                style={{ borderColor: innovatorAccentColor }}
+              >
                 Discover Food Characters creating bold tastings, live formats, and sensory
                 experiences that turn food into a moment guests remember.
               </p>
@@ -321,10 +309,13 @@ function InnovatorHero() {
           <Reveal delay={0.12}>
             <div className="relative mx-auto w-full max-w-[390px] lg:mx-0">
               <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-citrine)]" />
-              <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-pomodori)]" />
+              <div
+                className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full"
+                style={{ backgroundColor: innovatorAccentColor }}
+              />
 
               <SquarePhoto
-                src={media.innovatorHero}
+                src={innovatorHeroImage}
                 alt="Innovator Food Character preparing a new food experience"
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
@@ -339,11 +330,20 @@ function InnovatorHero() {
   );
 }
 
-function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+function PosterShape({
+  variant,
+  accentColor,
+}: {
+  variant: FoodCharacterProfile["cardShape"];
+  accentColor: string;
+}) {
   if (variant === "frame") {
     return (
       <>
-        <div className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem] bg-[var(--ft-pomodori)]">
+        <div
+          className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem]"
+          style={{ backgroundColor: accentColor }}
+        >
           <div className="absolute -right-10 top-7 h-[190px] w-[190px] rounded-full bg-white" />
           <div className="absolute -bottom-8 -left-8 h-[82px] w-[82px] rounded-full bg-white" />
         </div>
@@ -355,18 +355,23 @@ function PosterShape({ variant }: { variant: "circle" | "frame" }) {
 
   return (
     <>
-      <div className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full bg-[var(--ft-pomodori)]" />
-      <div className="absolute right-4 top-[38px] h-8 w-8 rounded-full bg-[var(--ft-pomodori)]" />
-      <div className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full bg-[var(--ft-pomodori)]" />
+      <div
+        className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute right-4 top-[38px] h-8 w-8 rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full"
+        style={{ backgroundColor: accentColor }}
+      />
     </>
   );
 }
 
-function InnovatorPosterCard({
-  character,
-}: {
-  character: (typeof featuredInnovators)[number];
-}) {
+function InnovatorPosterCard({ character }: { character: FoodCharacterProfile }) {
   return (
     <motion.article
       whileHover={{ y: -6 }}
@@ -374,19 +379,19 @@ function InnovatorPosterCard({
       className="group flex min-h-[390px] flex-col items-center"
     >
       <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
-        <PosterShape variant={character.shape} />
+        <PosterShape variant={character.cardShape} accentColor={character.accentColor} />
 
         <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
-          {character.title}
+          {character.cardHeadline}
         </h3>
 
         <p className="absolute bottom-[58px] left-[-18px] z-30 max-w-[150px] text-[0.76rem] font-black uppercase leading-[0.95] tracking-[-0.035em] text-black/62">
           {character.name}
         </p>
 
-        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+        <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
-            src={character.image}
+            src={character.cutoutImage}
             alt={`${character.name}, ${character.role}`}
             fill
             sizes="190px"
@@ -395,7 +400,7 @@ function InnovatorPosterCard({
         </div>
       </div>
 
-      <DiscoverButton href="/#experiences" />
+      <DiscoverButton href={getFoodCharacterProfileUrl(character)} />
     </motion.article>
   );
 }
@@ -414,19 +419,26 @@ function InnovatorCharacterWall() {
             </h2>
 
             <p className="mt-6 max-w-[520px] text-sm font-semibold leading-7 text-black/70">
-              Innovators are often combining traditional cooking techniques with modern methods to
-              create something unique. They bring a creative flair to flavours, formats, and
-              ingredients for memorable food moments.
+              Innovators combine food knowledge, creative formats, live energy, and fresh points of
+              view to create memorable Food Theatre moments.
             </p>
           </div>
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
-            {featuredInnovators.map((character) => (
-              <InnovatorPosterCard key={character.name} character={character} />
-            ))}
-          </div>
+          {featuredInnovators.length > 0 ? (
+            <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+              {featuredInnovators.map((character) => (
+                <InnovatorPosterCard key={character.slug} character={character} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
+              <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
+                Innovator profiles will appear here when published.
+              </p>
+            </div>
+          )}
         </Reveal>
       </div>
     </section>
@@ -490,7 +502,10 @@ function GuestPath() {
               className="relative mx-auto w-full max-w-[440px]"
             >
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--ft-citrine)]" />
-              <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-[var(--ft-pomodori)]" />
+              <div
+                className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full"
+                style={{ backgroundColor: innovatorAccentColor }}
+              />
 
               <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-3 shadow-[0_24px_80px_rgba(17,17,17,0.10)]">
                 <div className="relative aspect-square overflow-hidden rounded-[1.55rem] bg-[#fffdf8]">
@@ -530,7 +545,8 @@ function JoinInnovators() {
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-pomodori)] p-5 text-white sm:p-6 lg:p-8"
+              className="relative overflow-hidden rounded-[2rem] border border-black/10 p-5 text-white sm:p-6 lg:p-8"
+              style={{ backgroundColor: innovatorAccentColor }}
             >
               <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/18" />
               <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-citrine)]/80" />

@@ -6,16 +6,17 @@ import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
+import {
+  getFeaturedFoodCharacterProfilesByCategory,
+  getFoodCharacterProfileUrl,
+  type FoodCharacterProfile,
+} from "@/lib/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
 
   foodcosHero: "/media/home/character-foodcos.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
-
-  carloRossi: "/media/food-characters/foodcos/carlo-rossi-cutout.png",
-  ivyBloom: "/media/food-characters/foodcos/ivy-bloom-cutout.png",
-  tarekLane: "/media/food-characters/foodcos/tarek-lane-cutout.png",
 };
 
 type ButtonTone =
@@ -68,35 +69,7 @@ const foodcoSignals = [
   { label: "Memorable Food Brands", color: "var(--ft-citrine)" },
 ];
 
-const featuredFoodcos = [
-  {
-    name: "Carlo Rossi",
-    role: "Restaurant Host",
-    city: "Rome",
-    image: media.carloRossi,
-    title: "Signature Menu",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-  {
-    name: "Ivy Bloom",
-    role: "Food Brand Lead",
-    city: "London",
-    image: media.ivyBloom,
-    title: "Brand Tasting",
-    shape: "frame",
-    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
-  },
-  {
-    name: "Tarek Lane",
-    role: "Catering Director",
-    city: "Berlin",
-    image: media.tarekLane,
-    title: "Hosted Table",
-    shape: "circle",
-    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-  },
-] as const;
+const featuredFoodcos = getFeaturedFoodCharacterProfilesByCategory("foodcos");
 
 const guestPath = [
   {
@@ -342,7 +315,7 @@ function FoodcosHero() {
   );
 }
 
-function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+function PosterShape({ variant }: { variant: FoodCharacterProfile["cardShape"] }) {
   if (variant === "frame") {
     return (
       <>
@@ -365,11 +338,7 @@ function PosterShape({ variant }: { variant: "circle" | "frame" }) {
   );
 }
 
-function FoodcosPosterCard({
-  character,
-}: {
-  character: (typeof featuredFoodcos)[number];
-}) {
+function FoodcosPosterCard({ character }: { character: FoodCharacterProfile }) {
   return (
     <motion.article
       whileHover={{ y: -6 }}
@@ -377,19 +346,19 @@ function FoodcosPosterCard({
       className="group flex min-h-[390px] flex-col items-center"
     >
       <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
-        <PosterShape variant={character.shape} />
+        <PosterShape variant={character.cardShape} />
 
         <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
-          {character.title}
+          {character.cardHeadline}
         </h3>
 
         <p className="absolute bottom-[58px] left-[-18px] z-30 max-w-[150px] text-[0.76rem] font-black uppercase leading-[0.95] tracking-[-0.035em] text-black/62">
           {character.name}
         </p>
 
-        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+        <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
-            src={character.image}
+            src={character.cutoutImage}
             alt={`${character.name}, ${character.role}`}
             fill
             sizes="190px"
@@ -398,8 +367,27 @@ function FoodcosPosterCard({
         </div>
       </div>
 
-      <DiscoverButton href="/#experiences" />
+      <DiscoverButton href={getFoodCharacterProfileUrl(character)} />
     </motion.article>
+  );
+}
+
+function EmptyFoodcosState() {
+  return (
+    <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-6 text-center shadow-[0_20px_70px_rgba(17,17,17,0.06)]">
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
+        No FoodCo.s yet
+      </p>
+
+      <h3 className="ft-display mx-auto mt-4 max-w-2xl text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95]">
+        FoodCo.s profiles will appear here once they are added.
+      </h3>
+
+      <p className="mx-auto mt-5 max-w-xl text-sm font-semibold leading-7 text-black/62">
+        This section is ready for Sanity. When FoodCo.s are published, their names, card headlines,
+        transparent PNG cutouts, and profile links will render here.
+      </p>
+    </div>
   );
 }
 
@@ -425,11 +413,15 @@ function FeaturedFoodcos() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
-            {featuredFoodcos.map((character) => (
-              <FoodcosPosterCard key={character.name} character={character} />
-            ))}
-          </div>
+          {featuredFoodcos.length > 0 ? (
+            <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+              {featuredFoodcos.map((character) => (
+                <FoodcosPosterCard key={character.slug} character={character} />
+              ))}
+            </div>
+          ) : (
+            <EmptyFoodcosState />
+          )}
         </Reveal>
       </div>
     </section>
