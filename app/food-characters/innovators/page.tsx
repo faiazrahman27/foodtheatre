@@ -19,6 +19,7 @@ const media = {
 };
 
 const innovatorCategory = getFoodCharacterCategory("innovators");
+
 const innovatorAccentColor = innovatorCategory?.accentColor ?? "var(--ft-pomodori)";
 const innovatorAccentSoftColor =
   innovatorCategory?.accentSoftColor ?? "rgba(238, 84, 46, 0.16)";
@@ -392,7 +393,7 @@ function InnovatorPosterCard({ character }: { character: FoodCharacterProfile })
         <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
             src={character.cutoutImage}
-            alt={`${character.name}, ${character.role}`}
+            alt={character.cutoutImageAlt}
             fill
             sizes="190px"
             className="object-contain object-bottom grayscale transition duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
@@ -429,7 +430,7 @@ function InnovatorCharacterWall() {
           {featuredInnovators.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredInnovators.map((character) => (
-                <InnovatorPosterCard key={character.slug} character={character} />
+                <InnovatorPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (

@@ -19,11 +19,14 @@ const media = {
 };
 
 const creatorCategory = getFoodCharacterCategory("creators");
+
 const creatorAccentColor = creatorCategory?.accentColor ?? "var(--ft-citrine)";
 const creatorAccentSoftColor =
   creatorCategory?.accentSoftColor ?? "rgba(239, 209, 30, 0.18)";
 const creatorHeroImage =
   creatorCategory?.heroImage ?? "/media/home/character-creators.jpg";
+const creatorHeroImageAlt =
+  creatorCategory?.heroImageAlt ?? "Creator Food Character shaping a visual food story";
 
 type ButtonTone =
   | "denimPomodori"
@@ -316,7 +319,7 @@ function CreatorHero() {
 
               <SquarePhoto
                 src={creatorHeroImage}
-                alt="Creator Food Character shaping a visual food story"
+                alt={creatorHeroImageAlt}
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 390px"

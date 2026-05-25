@@ -111,6 +111,7 @@ function TextInput({
   type = "text",
   required = false,
   autoComplete,
+  maxLength,
 }: {
   id: string;
   name: string;
@@ -119,6 +120,7 @@ function TextInput({
   type?: string;
   required?: boolean;
   autoComplete?: string;
+  maxLength?: number;
 }) {
   return (
     <div>
@@ -133,6 +135,7 @@ function TextInput({
         required={required}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        maxLength={maxLength}
         className="mt-2 h-12 w-full rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black outline-none transition placeholder:text-black/32 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
       />
     </div>
@@ -217,7 +220,7 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
       title: "Relocation",
       text: profile.relocation,
     },
-  ];
+  ].filter((item) => item.title || item.text);
 
   return (
     <div className="mt-8 grid gap-3">
@@ -274,6 +277,8 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
 }
 
 function CharacterVisual({ profile }: { profile: FoodCharacterProfile }) {
+  const previewTags = profile.cuisineStyleFormat.slice(0, 3);
+
   return (
     <motion.div
       whileHover={{ y: -6 }}
@@ -297,7 +302,7 @@ function CharacterVisual({ profile }: { profile: FoodCharacterProfile }) {
         <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-white">
           <Image
             src={profile.portraitImage}
-            alt={`${profile.name}, ${profile.role}`}
+            alt={profile.portraitImageAlt}
             fill
             sizes="(max-width: 1024px) 100vw, 460px"
             priority
@@ -316,16 +321,18 @@ function CharacterVisual({ profile }: { profile: FoodCharacterProfile }) {
 
           <p className="mt-3 text-sm font-semibold text-black/58">{profile.role}</p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {profile.cuisineStyleFormat.slice(0, 3).map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-black/10 bg-[#fffdf8] px-3 py-2 text-[0.66rem] font-black uppercase tracking-[0.1em] text-black/58"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
+          {previewTags.length ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {previewTags.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-black/10 bg-[#fffdf8] px-3 py-2 text-[0.66rem] font-black uppercase tracking-[0.1em] text-black/58"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </motion.div>
@@ -339,7 +346,7 @@ function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
         <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[#fffdf8]">
           <Image
             src={item.image}
-            alt={item.name}
+            alt={item.imageAlt}
             fill
             sizes="(max-width: 640px) 100vw, 116px"
             className="object-cover"
@@ -444,7 +451,7 @@ function MenuArtwork({
           <div className="mt-7 grid gap-5">
             {sections.map((section, index) => (
               <div
-                key={section.title}
+                key={section.id}
                 className="rounded-[1.6rem] border border-black/10 bg-white/54 p-4 backdrop-blur-md"
               >
                 <div className="flex items-center gap-3 border-b border-black/10 pb-4">
@@ -462,7 +469,7 @@ function MenuArtwork({
 
                 <div className="mt-4 grid gap-3">
                   {section.items.map((item) => (
-                    <MenuItemCard key={`${section.title}-${item.name}`} item={item} />
+                    <MenuItemCard key={item.id} item={item} />
                   ))}
                 </div>
               </div>
@@ -476,9 +483,11 @@ function MenuArtwork({
           </div>
         )}
 
-        <p className="mt-6 border-t border-black/10 pt-5 text-xs font-semibold leading-6 text-black/48">
-          {profile.menu.note}
-        </p>
+        {profile.menu.note ? (
+          <p className="mt-6 border-t border-black/10 pt-5 text-xs font-semibold leading-6 text-black/48">
+            {profile.menu.note}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -506,12 +515,12 @@ function ConnectionModal({
       return;
     }
 
-    const fullName = String(formData.get("fullName") || "");
-    const email = String(formData.get("email") || "");
-    const phone = String(formData.get("phone") || "");
-    const organization = String(formData.get("organization") || "");
-    const dateOrTiming = String(formData.get("dateOrTiming") || "");
-    const message = String(formData.get("message") || "");
+    const fullName = String(formData.get("fullName") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const organization = String(formData.get("organization") || "").trim();
+    const dateOrTiming = String(formData.get("dateOrTiming") || "").trim();
+    const message = String(formData.get("message") || "").trim();
 
     const subject = `Connection request — ${profile.name}`;
 
@@ -521,8 +530,8 @@ function ConnectionModal({
       `Character: ${profile.name}`,
       `Category: ${profile.categoryLabel}`,
       `Role: ${profile.role}`,
-      `Cuisine / style / format: ${profile.cuisineStyleFormat.join(", ")}`,
-      `Collaboration type: ${profile.collaborationTypes.join(", ")}`,
+      `Cuisine / style / format: ${profile.cuisineStyleFormat.join(", ") || "Not provided"}`,
+      `Collaboration type: ${profile.collaborationTypes.join(", ") || "Not provided"}`,
       "",
       `Name: ${fullName}`,
       `Email: ${email}`,
@@ -597,6 +606,7 @@ function ConnectionModal({
                     placeholder="Enter your name"
                     required
                     autoComplete="name"
+                    maxLength={90}
                   />
 
                   <TextInput
@@ -607,6 +617,7 @@ function ConnectionModal({
                     type="email"
                     required
                     autoComplete="email"
+                    maxLength={120}
                   />
 
                   <TextInput
@@ -616,6 +627,7 @@ function ConnectionModal({
                     placeholder="Enter your number"
                     type="tel"
                     autoComplete="tel"
+                    maxLength={40}
                   />
 
                   <TextInput
@@ -624,6 +636,7 @@ function ConnectionModal({
                     label="Organization, brand, or venue"
                     placeholder="Optional"
                     autoComplete="organization"
+                    maxLength={120}
                   />
 
                   <div className="md:col-span-2">
@@ -632,6 +645,7 @@ function ConnectionModal({
                       name="dateOrTiming"
                       label="Preferred date or timing"
                       placeholder="Example: weekend evening, next month, private dinner"
+                      maxLength={140}
                     />
                   </div>
 
@@ -645,6 +659,7 @@ function ConnectionModal({
                       name="message"
                       rows={5}
                       required
+                      maxLength={1200}
                       placeholder={`Tell us how you would like to connect with ${profile.name}`}
                       className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/32 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
                     />
@@ -768,6 +783,14 @@ export default function FoodCharacterProfilePage() {
     { label: "Facebook", href: profile.facebook },
   ].filter((item): item is { label: string; href: string } => Boolean(item.href));
 
+  const hasWorkingFormats =
+    profile.cuisineStyleFormat.length > 0 || profile.collaborationTypes.length > 0;
+
+  const hasMenu =
+    Boolean(profile.menu.title) ||
+    Boolean(profile.menu.subtitle) ||
+    profile.menu.sections.length > 0;
+
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
       <ConnectionModal
@@ -881,7 +904,7 @@ export default function FoodCharacterProfilePage() {
                   <div className="mt-6 grid gap-3">
                     {profile.bringsToTable.map((item, index) => (
                       <div
-                        key={item}
+                        key={`${profile.id}-brings-${index}`}
                         className="grid gap-4 rounded-[1.4rem] border border-black/10 bg-[#fffdf8] p-4 sm:grid-cols-[54px_1fr] sm:items-start"
                       >
                         <span
@@ -905,7 +928,7 @@ export default function FoodCharacterProfilePage() {
                   <div className="mt-6 grid gap-4">
                     {profile.connectedExperiences.map((experience) => (
                       <div
-                        key={experience.title}
+                        key={experience.id}
                         className="rounded-[1.4rem] border border-black/10 bg-[#fffdf8] p-4"
                       >
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-black/42">
@@ -923,60 +946,68 @@ export default function FoodCharacterProfilePage() {
                 </div>
               ) : null}
 
-              <div className="rounded-[2rem] border border-black/10 bg-white p-5">
-                <SectionLabel>Working formats</SectionLabel>
+              {hasWorkingFormats ? (
+                <div className="rounded-[2rem] border border-black/10 bg-white p-5">
+                  <SectionLabel>Working formats</SectionLabel>
 
-                <div className="mt-6 grid gap-3">
-                  <TagGroup
-                    label="Cuisine / Style / Format"
-                    items={profile.cuisineStyleFormat}
-                    accentColor={profile.accentSoftColor}
-                  />
+                  <div className="mt-6 grid gap-3">
+                    <TagGroup
+                      label="Cuisine / Style / Format"
+                      items={profile.cuisineStyleFormat}
+                      accentColor={profile.accentSoftColor}
+                    />
 
-                  <TagGroup
-                    label="Collaboration Type"
-                    items={profile.collaborationTypes}
-                    accentColor="rgba(255, 253, 248, 0.95)"
-                  />
+                    <TagGroup
+                      label="Collaboration Type"
+                      items={profile.collaborationTypes}
+                      accentColor="rgba(255, 253, 248, 0.95)"
+                    />
+                  </div>
                 </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {hasMenu ? (
+        <section className="bg-white py-16 sm:py-24">
+          <div className="ft-container">
+            <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+              <div>
+                <SectionLabel>Character Menu</SectionLabel>
+
+                <h2 className="ft-display mt-4 max-w-4xl text-[clamp(2.6rem,5vw,5.2rem)] leading-[1]">
+                  A menu direction for this Food Theatre moment.
+                </h2>
+
+                <p className="mt-6 max-w-xl text-base font-semibold leading-8 text-black/62">
+                  Explore this Character’s menu direction with dishes, descriptions, prices, and
+                  visual details.
+                </p>
+
+                <ActionButton
+                  onClick={() => setMenuOpen(true)}
+                  tone="pomodoriViola"
+                  className="mt-8"
+                >
+                  Open Menu
+                  <TextArrow />
+                </ActionButton>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                className="block w-full text-left transition duration-300 hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
+                aria-label={`Open ${profile.name} menu`}
+              >
+                <MenuArtwork profile={profile} />
+              </button>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-16 sm:py-24">
-        <div className="ft-container">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div>
-              <SectionLabel>Character Menu</SectionLabel>
-
-              <h2 className="ft-display mt-4 max-w-4xl text-[clamp(2.6rem,5vw,5.2rem)] leading-[1]">
-                A menu direction for this Food Theatre moment.
-              </h2>
-
-              <p className="mt-6 max-w-xl text-base font-semibold leading-8 text-black/62">
-                This visual menu uses structured menu data with images, descriptions, and prices.
-                Later, the same fields can come from Sanity without changing the page design.
-              </p>
-
-              <ActionButton onClick={() => setMenuOpen(true)} tone="pomodoriViola" className="mt-8">
-                Open Menu
-                <TextArrow />
-              </ActionButton>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="block w-full text-left transition duration-300 hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
-              aria-label={`Open ${profile.name} menu`}
-            >
-              <MenuArtwork profile={profile} />
-            </button>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
     </main>
   );
 }

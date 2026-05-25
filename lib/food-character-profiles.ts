@@ -9,6 +9,7 @@ export type FoodCharacterCategorySlug =
   | "foodcos";
 
 export type FoodCharacterCategory = {
+  id: string;
   slug: FoodCharacterCategorySlug;
   label: string;
   pluralLabel: string;
@@ -16,6 +17,7 @@ export type FoodCharacterCategory = {
   accentColor: string;
   accentSoftColor: string;
   heroImage: string;
+  heroImageAlt: string;
   shortDescription: string;
   sortOrder: number;
   isPublished: boolean;
@@ -84,6 +86,12 @@ export type FoodCharacterProfile = {
   cardHeadline: string;
 
   cardShape: FoodCharacterCardShape;
+
+  /**
+   * Temporary local design placement for the poster-card cutout.
+   * Later, Sanity should not require editors to type Tailwind classes.
+   * A mapper can convert a Sanity placement token into this class string.
+   */
   cardImageBoxClassName: string;
 
   /**
@@ -121,6 +129,7 @@ export type FoodCharacterProfile = {
 
 export const foodCharacterCategories: FoodCharacterCategory[] = [
   {
+    id: "category-innovators",
     slug: "innovators",
     label: "Innovators",
     pluralLabel: "Innovators",
@@ -128,12 +137,14 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-pomodori)",
     accentSoftColor: "rgba(238, 84, 46, 0.16)",
     heroImage: "/media/home/character-innovators.jpg",
+    heroImageAlt: "Innovator Food Character preparing a new food experience",
     shortDescription:
       "New techniques, unexpected formats, and fresh ways of experiencing taste.",
     sortOrder: 1,
     isPublished: true,
   },
   {
+    id: "category-creators",
     slug: "creators",
     label: "Creators",
     pluralLabel: "Creators",
@@ -141,12 +152,14 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-citrine)",
     accentSoftColor: "rgba(239, 209, 30, 0.18)",
     heroImage: "/media/home/character-creators.jpg",
+    heroImageAlt: "Creator Food Character shaping a visual food story",
     shortDescription:
       "Food storytellers shaping flavour, visuals, content, and atmosphere.",
     sortOrder: 2,
     isPublished: true,
   },
   {
+    id: "category-artisanal",
     slug: "artisanal",
     label: "Artisanal",
     pluralLabel: "Artisanal Characters",
@@ -154,12 +167,14 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-viola)",
     accentSoftColor: "rgba(122, 115, 181, 0.16)",
     heroImage: "/media/home/character-artisanal.jpg",
+    heroImageAlt: "Artisanal Food Character shaping handmade food",
     shortDescription:
       "Small makers creating distinctive food through skill, process, and craft.",
     sortOrder: 3,
     isPublished: true,
   },
   {
+    id: "category-global",
     slug: "global",
     label: "Global",
     pluralLabel: "Global Characters",
@@ -167,12 +182,14 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-blush)",
     accentSoftColor: "rgba(243, 183, 191, 0.22)",
     heroImage: "/media/home/character-global.jpg",
+    heroImageAlt: "Global Food Character hosting a cultural food moment",
     shortDescription:
       "Recipes, traditions, memories, and flavours from around the world.",
     sortOrder: 4,
     isPublished: true,
   },
   {
+    id: "category-wellness",
     slug: "wellness",
     label: "Wellness",
     pluralLabel: "Wellness Characters",
@@ -180,12 +197,14 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-menta)",
     accentSoftColor: "rgba(55, 175, 135, 0.16)",
     heroImage: "/media/home/character-wellness.jpg",
+    heroImageAlt: "Wellness Food Character preparing a fresh food moment",
     shortDescription:
       "Fresh, balanced, generous food moments shaped around feeling good.",
     sortOrder: 5,
     isPublished: true,
   },
   {
+    id: "category-foodcos",
     slug: "foodcos",
     label: "FoodCo.s",
     pluralLabel: "FoodCo.s",
@@ -193,6 +212,7 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
     accentColor: "var(--ft-denim)",
     accentSoftColor: "rgba(0, 114, 174, 0.16)",
     heroImage: "/media/home/character-foodcos.jpg",
+    heroImageAlt: "FoodCo.s Character presenting a branded food experience",
     shortDescription:
       "Restaurants, caterers, producers, operators, and food brands.",
     sortOrder: 6,
@@ -284,7 +304,7 @@ export const foodCharacterProfiles: FoodCharacterProfile[] = [
       subtitle: "A visual food story shaped for Food Theatre guests",
       currency: "EUR",
       note:
-        "This menu is sample structured data for the character profile. Later, the same fields can come from Sanity and be rendered into the same branded Food Theatre menu view.",
+        "Menu items, prices, and availability may change depending on the date, format, ingredients, and Food Theatre experience.",
       sections: [
         {
           id: "opening",
@@ -418,7 +438,10 @@ export function getFoodCharacterCategoryUrl(category: FoodCharacterCategorySlug)
 export function getFoodCharacterCategories() {
   return [...foodCharacterCategories]
     .filter((category) => category.isPublished)
-    .sort((firstCategory, secondCategory) => firstCategory.sortOrder - secondCategory.sortOrder);
+    .sort(
+      (firstCategory, secondCategory) =>
+        firstCategory.sortOrder - secondCategory.sortOrder
+    );
 }
 
 export function getFoodCharacterCategory(category: string) {
@@ -444,10 +467,7 @@ export function getFeaturedFoodCharacterProfilesByCategory(category: string) {
 }
 
 export function findFoodCharacterProfile(category: string, slug: string) {
-  return foodCharacterProfiles.find(
-    (profile) =>
-      profile.category === category &&
-      profile.slug === slug &&
-      profile.isPublished
+  return getFoodCharacterProfiles().find(
+    (profile) => profile.category === category && profile.slug === slug
   );
 }

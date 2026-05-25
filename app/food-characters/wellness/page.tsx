@@ -8,16 +8,23 @@ import { Reveal } from "@/components/motion/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
 import {
   getFeaturedFoodCharacterProfilesByCategory,
+  getFoodCharacterCategory,
   getFoodCharacterProfileUrl,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-
-  wellnessHero: "/media/home/character-wellness.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
 };
+
+const wellnessCategory = getFoodCharacterCategory("wellness");
+
+const wellnessAccentColor = wellnessCategory?.accentColor ?? "var(--ft-menta)";
+const wellnessAccentSoftColor =
+  wellnessCategory?.accentSoftColor ?? "rgba(55, 175, 135, 0.16)";
+const wellnessHeroImage =
+  wellnessCategory?.heroImage ?? "/media/home/character-wellness.jpg";
 
 type ButtonTone =
   | "denimPomodori"
@@ -240,7 +247,10 @@ function WellnessHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-menta)]/22 blur-3xl" />
+        <div
+          className="absolute left-[-10rem] top-[-7rem] h-[30rem] w-[30rem] rounded-full blur-3xl"
+          style={{ backgroundColor: wellnessAccentSoftColor }}
+        />
         <div className="absolute right-[-11rem] top-16 h-[32rem] w-[32rem] rounded-full bg-[var(--ft-citrine)]/14 blur-3xl" />
         <div className="absolute bottom-[-14rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-blush)]/18 blur-3xl" />
       </div>
@@ -276,7 +286,10 @@ function WellnessHero() {
                 </span>
               </h1>
 
-              <p className="mt-8 max-w-3xl border-l-4 border-[var(--ft-menta)] pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10">
+              <p
+                className="mt-8 max-w-3xl border-l-4 pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10"
+                style={{ borderColor: wellnessAccentColor }}
+              >
                 Discover Food Characters turning fresh ingredients, balanced flavour, and thoughtful
                 hosting into feel-good food moments guests can enjoy and remember.
               </p>
@@ -298,10 +311,13 @@ function WellnessHero() {
           <Reveal delay={0.12}>
             <div className="relative mx-auto w-full max-w-[390px] lg:mx-0">
               <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--ft-citrine)]" />
-              <div className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full bg-[var(--ft-menta)]" />
+              <div
+                className="absolute -bottom-4 -left-4 h-14 w-14 rounded-full"
+                style={{ backgroundColor: wellnessAccentColor }}
+              />
 
               <SquarePhoto
-                src={media.wellnessHero}
+                src={wellnessHeroImage}
                 alt="Wellness Food Character preparing a fresh food moment"
                 className="relative rounded-[2rem] border border-black/10 ft-immersive-shadow"
                 imageClassName="scale-[1.02]"
@@ -316,11 +332,20 @@ function WellnessHero() {
   );
 }
 
-function PosterShape({ variant }: { variant: FoodCharacterProfile["cardShape"] }) {
+function PosterShape({
+  variant,
+  accentColor,
+}: {
+  variant: FoodCharacterProfile["cardShape"];
+  accentColor: string;
+}) {
   if (variant === "frame") {
     return (
       <>
-        <div className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem] bg-[var(--ft-menta)]">
+        <div
+          className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem]"
+          style={{ backgroundColor: accentColor }}
+        >
           <div className="absolute -right-10 top-7 h-[190px] w-[190px] rounded-full bg-white" />
           <div className="absolute -bottom-8 -left-8 h-[82px] w-[82px] rounded-full bg-white" />
         </div>
@@ -332,9 +357,18 @@ function PosterShape({ variant }: { variant: FoodCharacterProfile["cardShape"] }
 
   return (
     <>
-      <div className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full bg-[var(--ft-menta)]" />
-      <div className="absolute right-4 top-[38px] h-8 w-8 rounded-full bg-[var(--ft-menta)]" />
-      <div className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full bg-[var(--ft-menta)]" />
+      <div
+        className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute right-4 top-[38px] h-8 w-8 rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+      <div
+        className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full"
+        style={{ backgroundColor: accentColor }}
+      />
     </>
   );
 }
@@ -347,7 +381,7 @@ function WellnessPosterCard({ character }: { character: FoodCharacterProfile }) 
       className="group flex min-h-[390px] flex-col items-center"
     >
       <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
-        <PosterShape variant={character.cardShape} />
+        <PosterShape variant={character.cardShape} accentColor={character.accentColor} />
 
         <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
           {character.cardHeadline}
@@ -360,7 +394,7 @@ function WellnessPosterCard({ character }: { character: FoodCharacterProfile }) 
         <div className={`absolute z-20 overflow-visible ${character.cardImageBoxClassName}`}>
           <Image
             src={character.cutoutImage}
-            alt={`${character.name}, ${character.role}`}
+            alt={character.cutoutImageAlt}
             fill
             sizes="190px"
             className="object-contain object-bottom grayscale transition duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
@@ -416,7 +450,7 @@ function FeaturedWellnessCharacters() {
           {featuredWellnessCharacters.length > 0 ? (
             <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
               {featuredWellnessCharacters.map((character) => (
-                <WellnessPosterCard key={character.slug} character={character} />
+                <WellnessPosterCard key={character.id} character={character} />
               ))}
             </div>
           ) : (
@@ -432,7 +466,10 @@ function GuestPath() {
   return (
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-24">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute right-[-10rem] top-10 h-[28rem] w-[28rem] rounded-full bg-[var(--ft-menta)]/12 blur-3xl" />
+        <div
+          className="absolute right-[-10rem] top-10 h-[28rem] w-[28rem] rounded-full blur-3xl"
+          style={{ backgroundColor: wellnessAccentSoftColor }}
+        />
         <div className="absolute bottom-[-12rem] left-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-citrine)]/10 blur-3xl" />
       </div>
 
@@ -484,7 +521,10 @@ function GuestPath() {
               transition={{ type: "spring", stiffness: 230, damping: 26 }}
               className="relative mx-auto w-full max-w-[440px]"
             >
-              <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--ft-menta)]" />
+              <div
+                className="absolute -right-4 -top-4 h-16 w-16 rounded-full"
+                style={{ backgroundColor: wellnessAccentColor }}
+              />
               <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-[var(--ft-citrine)]" />
 
               <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-3 shadow-[0_24px_80px_rgba(17,17,17,0.10)]">
@@ -526,7 +566,8 @@ function JoinWellnessCharacters() {
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--ft-menta)] p-5 text-white sm:p-6 lg:p-8"
+              className="relative overflow-hidden rounded-[2rem] border border-black/10 p-5 text-white sm:p-6 lg:p-8"
+              style={{ backgroundColor: wellnessAccentColor }}
             >
               <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/18" />
               <div className="pointer-events-none absolute bottom-4 left-1/2 h-8 w-8 rounded-full bg-[var(--ft-citrine)]/80" />
