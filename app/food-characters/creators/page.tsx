@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import { type ReactNode, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
-import { GradientBackground } from "@/components/ui/paper-design-shader-background";
 import { Typewriter } from "@/components/ui/typewriter";
 
 const media = {
@@ -14,9 +13,9 @@ const media = {
   creatorHero: "/media/home/character-creators.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
 
-  miraDale: "/media/food-characters/creators/mira-dale.jpg",
-  enzoRay: "/media/food-characters/creators/enzo-ray.jpg",
-  salmaNoor: "/media/food-characters/creators/salma-noor.jpg",
+  miraDale: "/media/food-characters/creators/mira-dale-cutout.png",
+  enzoRay: "/media/food-characters/creators/enzo-ray-cutout.png",
+  salmaNoor: "/media/food-characters/creators/salma-noor-cutout.png",
 };
 
 type ButtonTone =
@@ -75,33 +74,27 @@ const featuredCreators = [
     role: "Food Storyteller",
     city: "Bologna",
     image: media.miraDale,
-    accent: "var(--ft-citrine)",
-    headline: "Food moments shaped with story, colour, and a clear guest feeling.",
-    format: "Story Table",
-    mood: "Bright · Social · Expressive",
-    experience: "Made for guests who want the table to feel personal, visual, and easy to remember.",
+    title: "Food Story",
+    shape: "circle",
+    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
   },
   {
     name: "Enzo Ray",
     role: "Food Film Creator",
     city: "Milan",
     image: media.enzoRay,
-    accent: "var(--ft-denim)",
-    headline: "A creator-led table where flavour, movement, and atmosphere meet.",
-    format: "Visual Tasting",
-    mood: "Modern · Energetic · Scene-Led",
-    experience: "A food moment designed around rhythm, presentation, and the story behind each dish.",
+    title: "Visual Table",
+    shape: "frame",
+    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
   },
   {
     name: "Salma Noor",
     role: "Table Stylist",
     city: "Paris",
     image: media.salmaNoor,
-    accent: "var(--ft-blush)",
-    headline: "Beautiful table settings that turn food into a shared visual experience.",
-    format: "Styled Table",
-    mood: "Warm · Detailed · Guest-Friendly",
-    experience: "Built for guests who enjoy atmosphere, design, hosting, and food with a strong point of view.",
+    title: "Styled Scene",
+    shape: "circle",
+    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
   },
 ] as const;
 
@@ -147,23 +140,14 @@ function BrandButton({
   );
 }
 
-function ActionButton({
-  children,
-  tone,
-  onClick,
-}: {
-  children: ReactNode;
-  tone: ButtonTone;
-  onClick: () => void;
-}) {
+function DiscoverButton({ href }: { href: string }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group inline-flex w-fit items-center justify-center gap-2 rounded-full border border-black/10 px-6 py-4 text-sm font-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)] ${buttonToneClasses[tone]}`}
+    <Link
+      href={href}
+      className="group inline-flex h-10 min-w-[138px] items-center justify-center rounded-full border-2 border-black/70 bg-white px-7 text-xs font-black text-black transition duration-300 hover:-translate-y-0.5 hover:border-[var(--ft-citrine)] hover:bg-[var(--ft-citrine)] hover:text-black focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
     >
-      {children}
-    </button>
+      Discover
+    </Link>
   );
 }
 
@@ -358,163 +342,88 @@ function CreatorHero() {
   );
 }
 
-function FeaturedCreatorsCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeCharacter = featuredCreators[activeIndex];
+function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+  if (variant === "frame") {
+    return (
+      <>
+        <div className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem] bg-[var(--ft-citrine)]">
+          <div className="absolute -right-10 top-7 h-[190px] w-[190px] rounded-full bg-white" />
+          <div className="absolute -bottom-8 -left-8 h-[82px] w-[82px] rounded-full bg-white" />
+        </div>
 
-  const activeLabel = useMemo(
-    () => `${activeCharacter.name}, ${activeCharacter.role}`,
-    [activeCharacter]
-  );
-
-  const showPrevious = () => {
-    setActiveIndex(
-      (currentIndex) =>
-        (currentIndex - 1 + featuredCreators.length) % featuredCreators.length
+        <div className="absolute right-1 top-[42px] h-8 w-8 rounded-full bg-white" />
+      </>
     );
-  };
+  }
 
-  const showNext = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredCreators.length);
-  };
+  return (
+    <>
+      <div className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full bg-[var(--ft-citrine)]" />
+      <div className="absolute right-4 top-[38px] h-8 w-8 rounded-full bg-[var(--ft-citrine)]" />
+      <div className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full bg-[var(--ft-citrine)]" />
+    </>
+  );
+}
 
+function CreatorPosterCard({
+  character,
+}: {
+  character: (typeof featuredCreators)[number];
+}) {
+  return (
+    <motion.article
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 250, damping: 28 }}
+      className="group flex min-h-[390px] flex-col items-center"
+    >
+      <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
+        <PosterShape variant={character.shape} />
+
+        <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
+          {character.title}
+        </h3>
+
+        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+          <Image
+            src={character.image}
+            alt={`${character.name}, ${character.role}`}
+            fill
+            sizes="190px"
+            className="object-contain object-bottom grayscale transition duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
+          />
+        </div>
+      </div>
+
+      <DiscoverButton href="/#experiences" />
+    </motion.article>
+  );
+}
+
+function FeaturedCreators() {
   return (
     <section
       id="featured-creators"
-      className="relative isolate overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
+      className="relative isolate overflow-hidden bg-white py-14 sm:py-20"
     >
-      <div className="ft-container relative">
-        <SectionIntro
-          label="Featured Creators"
-          title="Food Stories Made for the Table."
-          text="Meet the Characters turning visuals, flavour, atmosphere, and hosting into memorable Food Theatre experiences."
-        />
+      <div className="mx-auto w-full max-w-[850px] px-5">
+        <Reveal>
+          <div>
+            <h2 className="font-black uppercase leading-[0.88] tracking-[-0.065em] text-black text-[clamp(3.6rem,8vw,5.3rem)]">
+              Creators
+            </h2>
+
+            <p className="mt-6 max-w-[520px] text-sm font-semibold leading-7 text-black/70">
+              Creators turn food into a story guests can see, feel, and share through atmosphere,
+              visuals, hosting, and memorable table moments.
+            </p>
+          </div>
+        </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="relative isolate mt-14 overflow-hidden rounded-[2.5rem] border border-black/10 bg-white/62 shadow-[0_30px_90px_rgba(17,17,17,0.12)] backdrop-blur-xl">
-            <GradientBackground />
-
-            <div className="absolute inset-0 z-0 bg-white/30" />
-
-            <div className="relative z-10 grid gap-0 lg:grid-cols-[minmax(320px,460px)_minmax(0,1fr)]">
-              <div className="relative p-5 sm:p-6 lg:p-8">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeCharacter.name}
-                    initial={{ opacity: 0, scale: 0.985, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.015, y: -8 }}
-                    transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <SquarePhoto
-                      src={activeCharacter.image}
-                      alt={`${activeCharacter.name}, ${activeCharacter.role}`}
-                      className="rounded-[2rem] border border-black/10 bg-white shadow-[0_24px_70px_rgba(17,17,17,0.14)]"
-                      imageClassName="scale-[1.018]"
-                      sizes="(max-width: 1024px) 100vw, 460px"
-                    />
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-5 flex items-center justify-between gap-4">
-                  <div className="flex gap-2">
-                    {featuredCreators.map((character, index) => (
-                      <button
-                        key={character.name}
-                        type="button"
-                        onClick={() => setActiveIndex(index)}
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          activeIndex === index
-                            ? "w-10 bg-[var(--ft-citrine)]"
-                            : "w-2.5 bg-black/18 hover:bg-black/38"
-                        }`}
-                        aria-label={`Show ${character.name}`}
-                      />
-                    ))}
-                  </div>
-
-                  <p className="rounded-full border border-black/10 bg-white/74 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-black/42 backdrop-blur-md">
-                    {activeIndex + 1} / {featuredCreators.length}
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex min-h-[500px] flex-col justify-between p-6 sm:p-8 lg:p-10">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeLabel}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.28 }}
-                  >
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className="h-3.5 w-3.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: activeCharacter.accent }}
-                      />
-
-                      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-                        {activeCharacter.role}
-                      </p>
-
-                      <span className="h-px w-8 bg-black/14" />
-
-                      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-                        {activeCharacter.format}
-                      </p>
-                    </div>
-
-                    <h3 className="ft-display ft-text-balance mt-7 max-w-5xl text-[clamp(3rem,6vw,6.25rem)] leading-[0.96] tracking-[0.002em] text-black">
-                      {activeCharacter.name}
-                    </h3>
-
-                    <p className="mt-7 max-w-3xl text-xl font-black leading-9 text-black/78 sm:text-2xl sm:leading-10">
-                      {activeCharacter.headline}
-                    </p>
-
-                    <div className="mt-8 grid gap-4 border-y border-black/10 py-6 md:grid-cols-2">
-                      <div className="rounded-[1.5rem] border border-black/10 bg-white/74 p-4 backdrop-blur-md">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-black/34">
-                          Guest Feeling
-                        </p>
-
-                        <p className="mt-2 text-sm font-semibold leading-7 text-black/68 sm:text-base">
-                          {activeCharacter.mood}
-                        </p>
-                      </div>
-
-                      <div className="rounded-[1.5rem] border border-black/10 bg-white/74 p-4 backdrop-blur-md">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-black/34">
-                          Why It Stands Out
-                        </p>
-
-                        <p className="mt-2 text-sm font-semibold leading-7 text-black/68 sm:text-base">
-                          {activeCharacter.experience}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-10 flex flex-col gap-3 border-t border-black/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex gap-3">
-                    <ActionButton onClick={showPrevious} tone="denimPomodori">
-                      Previous
-                    </ActionButton>
-
-                    <ActionButton onClick={showNext} tone="citrineMenta">
-                      Next
-                    </ActionButton>
-                  </div>
-
-                  <BrandButton href="/#experiences" tone="violaBlush">
-                    Find Experiences
-                    <TextArrow />
-                  </BrandButton>
-                </div>
-              </div>
-            </div>
+          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+            {featuredCreators.map((character) => (
+              <CreatorPosterCard key={character.name} character={character} />
+            ))}
           </div>
         </Reveal>
       </div>
@@ -666,7 +575,7 @@ export default function CreatorsPage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
       <CreatorHero />
       <CreatorSignalTicker />
-      <FeaturedCreatorsCarousel />
+      <FeaturedCreators />
       <GuestPath />
       <JoinCreators />
     </main>

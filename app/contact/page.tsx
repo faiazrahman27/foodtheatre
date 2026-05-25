@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { type FormEvent, useMemo, useState } from "react";
+import { GradientBackground } from "@/components/ui/paper-design-shader-background";
 
 const CONTACT_EMAIL = "hello@foodtheatre.com";
 
@@ -65,7 +66,7 @@ function TextInput({
         required={required}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        className="mt-2 h-12 w-full rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
+        className="mt-2 h-12 w-full rounded-full border border-black/15 bg-white/92 px-4 text-sm font-semibold text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
       />
     </div>
   );
@@ -95,7 +96,7 @@ function SelectInput({
         name={name}
         required={required}
         defaultValue=""
-        className="mt-2 h-12 w-full rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black outline-none transition focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
+        className="mt-2 h-12 w-full rounded-full border border-black/15 bg-white/92 px-4 text-sm font-semibold text-black outline-none transition focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
       >
         <option value="" disabled>
           Choose one
@@ -172,16 +173,12 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-white px-4 py-14 text-sm text-black sm:py-20">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-10rem] top-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[var(--ft-citrine)]/18 blur-3xl" />
-        <div className="absolute right-[-12rem] top-10 h-[34rem] w-[34rem] rounded-full bg-[var(--ft-blush)]/22 blur-3xl" />
-        <div className="absolute bottom-[-16rem] left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--ft-menta)]/14 blur-3xl" />
-      </div>
+    <main className="relative isolate min-h-screen overflow-hidden bg-[#fffdf8] px-4 py-14 text-sm text-black sm:py-20">
+      <GradientBackground />
 
       <form
         onSubmit={handleSubmit}
-        className="mx-auto flex w-full max-w-[760px] flex-col items-center rounded-[2.2rem] border border-black/10 bg-[#fffdf8]/92 px-5 py-8 shadow-[0_30px_90px_rgba(17,17,17,0.10)] backdrop-blur-md sm:px-8 sm:py-10"
+        className="relative z-10 mx-auto flex w-full max-w-[760px] flex-col items-center rounded-[2.2rem] border border-black/10 bg-[#fffdf8]/86 px-5 py-8 shadow-[0_30px_90px_rgba(17,17,17,0.10)] backdrop-blur-md sm:px-8 sm:py-10"
       >
         <input
           tabIndex={-1}
@@ -322,12 +319,12 @@ export default function ContactPage() {
               required
               rows={6}
               placeholder="Write your message"
-              className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
+              className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white/92 p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
             />
           </div>
         </div>
 
-        <label className="mt-6 flex w-full cursor-pointer items-start gap-3 rounded-[1.3rem] border border-black/10 bg-white px-4 py-4 text-sm font-semibold leading-7 text-black/62">
+        <label className="mt-6 flex w-full cursor-pointer items-start gap-3 rounded-[1.3rem] border border-black/10 bg-white/88 px-4 py-4 text-sm font-semibold leading-7 text-black/62">
           <input
             type="checkbox"
             required
