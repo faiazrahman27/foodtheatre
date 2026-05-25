@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import { type ReactNode, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
-import { GradientBackground } from "@/components/ui/paper-design-shader-background";
 import { Typewriter } from "@/components/ui/typewriter";
 
 const media = {
@@ -14,9 +13,9 @@ const media = {
   wellnessHero: "/media/home/character-wellness.jpg",
   guestJourney: "/media/food-characters/3-photo.jpg",
 
-  avaLumi: "/media/food-characters/wellness/ava-lumi.jpg",
-  noahVale: "/media/food-characters/wellness/noah-vale.jpg",
-  mayaRen: "/media/food-characters/wellness/maya-ren.jpg",
+  avaLumi: "/media/food-characters/wellness/ava-lumi-cutout.png",
+  noahVale: "/media/food-characters/wellness/noah-vale-cutout.png",
+  mayaRen: "/media/food-characters/wellness/maya-ren-cutout.png",
 };
 
 type ButtonTone =
@@ -75,33 +74,27 @@ const featuredWellnessCharacters = [
     role: "Seasonal Food Host",
     city: "Copenhagen",
     image: media.avaLumi,
-    accent: "var(--ft-menta)",
-    headline: "A fresh seasonal table built around colour, balance, and generous flavour.",
-    format: "Seasonal Table",
-    mood: "Fresh · Calm · Uplifting",
-    experience: "Made for guests who want food that feels light, beautiful, social, and satisfying.",
+    title: "Fresh Tables",
+    shape: "circle",
+    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
   },
   {
     name: "Noah Vale",
     role: "Plant-Forward Cook",
     city: "Amsterdam",
     image: media.noahVale,
-    accent: "var(--ft-citrine)",
-    headline: "Plant-forward food presented with warmth, craft, and strong table energy.",
-    format: "Plant Table",
-    mood: "Bright · Modern · Ingredient-Led",
-    experience: "A clear, flavour-first experience for guests who enjoy vegetables, grains, herbs, and creative plates.",
+    title: "Plant Plates",
+    shape: "frame",
+    imageBoxClassName: "right-[-6px] bottom-[36px] h-[250px] w-[178px]",
   },
   {
     name: "Maya Ren",
     role: "Breakfast Experience Host",
     city: "Vienna",
     image: media.mayaRen,
-    accent: "var(--ft-denim)",
-    headline: "A morning food moment shaped around rhythm, freshness, and easy conversation.",
-    format: "Morning Table",
-    mood: "Gentle · Social · Refreshing",
-    experience: "Built for guests looking for a welcoming start, thoughtful food, and a table worth sharing.",
+    title: "Morning Ritual",
+    shape: "circle",
+    imageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
   },
 ] as const;
 
@@ -147,23 +140,14 @@ function BrandButton({
   );
 }
 
-function ActionButton({
-  children,
-  tone,
-  onClick,
-}: {
-  children: ReactNode;
-  tone: ButtonTone;
-  onClick: () => void;
-}) {
+function DiscoverButton({ href }: { href: string }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group inline-flex w-fit items-center justify-center gap-2 rounded-full border border-black/10 px-6 py-4 text-sm font-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)] ${buttonToneClasses[tone]}`}
+    <Link
+      href={href}
+      className="group inline-flex h-10 min-w-[138px] items-center justify-center rounded-full border-2 border-black/70 bg-white px-7 text-xs font-black text-black transition duration-300 hover:-translate-y-0.5 hover:border-[var(--ft-menta)] hover:bg-[var(--ft-menta)] hover:text-white focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
     >
-      {children}
-    </button>
+      Discover
+    </Link>
   );
 }
 
@@ -358,164 +342,88 @@ function WellnessHero() {
   );
 }
 
-function FeaturedWellnessCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeCharacter = featuredWellnessCharacters[activeIndex];
+function PosterShape({ variant }: { variant: "circle" | "frame" }) {
+  if (variant === "frame") {
+    return (
+      <>
+        <div className="absolute right-0 top-[42px] h-[230px] w-[230px] rounded-[1.7rem] bg-[var(--ft-menta)]">
+          <div className="absolute -right-10 top-7 h-[190px] w-[190px] rounded-full bg-white" />
+          <div className="absolute -bottom-8 -left-8 h-[82px] w-[82px] rounded-full bg-white" />
+        </div>
 
-  const activeLabel = useMemo(
-    () => `${activeCharacter.name}, ${activeCharacter.role}`,
-    [activeCharacter]
-  );
-
-  const showPrevious = () => {
-    setActiveIndex(
-      (currentIndex) =>
-        (currentIndex - 1 + featuredWellnessCharacters.length) %
-        featuredWellnessCharacters.length
+        <div className="absolute right-1 top-[42px] h-8 w-8 rounded-full bg-white" />
+      </>
     );
-  };
+  }
 
-  const showNext = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % featuredWellnessCharacters.length);
-  };
+  return (
+    <>
+      <div className="absolute right-5 top-[66px] h-[220px] w-[220px] rounded-full bg-[var(--ft-menta)]" />
+      <div className="absolute right-4 top-[38px] h-8 w-8 rounded-full bg-[var(--ft-menta)]" />
+      <div className="absolute left-1 bottom-[70px] h-16 w-16 rounded-br-full rounded-tl-full bg-[var(--ft-menta)]" />
+    </>
+  );
+}
 
+function WellnessPosterCard({
+  character,
+}: {
+  character: (typeof featuredWellnessCharacters)[number];
+}) {
+  return (
+    <motion.article
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 250, damping: 28 }}
+      className="group flex min-h-[390px] flex-col items-center"
+    >
+      <div className="relative h-[306px] w-full max-w-[292px] overflow-visible">
+        <PosterShape variant={character.shape} />
+
+        <h3 className="absolute left-[-18px] top-[38px] z-30 max-w-[150px] text-[clamp(1.75rem,2.25vw,2.25rem)] font-black uppercase leading-[0.9] tracking-[-0.07em] text-black">
+          {character.title}
+        </h3>
+
+        <div className={`absolute z-20 overflow-visible ${character.imageBoxClassName}`}>
+          <Image
+            src={character.image}
+            alt={`${character.name}, ${character.role}`}
+            fill
+            sizes="190px"
+            className="object-contain object-bottom grayscale transition duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
+          />
+        </div>
+      </div>
+
+      <DiscoverButton href="/#experiences" />
+    </motion.article>
+  );
+}
+
+function FeaturedWellnessCharacters() {
   return (
     <section
       id="featured-wellness"
-      className="relative isolate overflow-hidden bg-[#fffdf8] py-16 sm:py-24"
+      className="relative isolate overflow-hidden bg-white py-14 sm:py-20"
     >
-      <div className="ft-container relative">
-        <SectionIntro
-          label="Featured Wellness Characters"
-          title="Fresh Food Moments With Real Table Appeal."
-          text="Meet the Characters turning seasonal ingredients, balanced plates, and welcoming hosting into Food Theatre experiences."
-        />
+      <div className="mx-auto w-full max-w-[850px] px-5">
+        <Reveal>
+          <div>
+            <h2 className="font-black uppercase leading-[0.88] tracking-[-0.065em] text-black text-[clamp(3.6rem,8vw,5.3rem)]">
+              Wellness
+            </h2>
+
+            <p className="mt-6 max-w-[520px] text-sm font-semibold leading-7 text-black/70">
+              Wellness Characters bring fresh ingredients, balanced flavour, and welcoming hosting
+              into food moments that feel bright, social, and easy to enjoy.
+            </p>
+          </div>
+        </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="relative isolate mt-14 overflow-hidden rounded-[2.5rem] border border-black/10 bg-white/62 shadow-[0_30px_90px_rgba(17,17,17,0.12)] backdrop-blur-xl">
-            <GradientBackground />
-
-            <div className="absolute inset-0 z-0 bg-white/30" />
-
-            <div className="relative z-10 grid gap-0 lg:grid-cols-[minmax(320px,460px)_minmax(0,1fr)]">
-              <div className="relative p-5 sm:p-6 lg:p-8">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeCharacter.name}
-                    initial={{ opacity: 0, scale: 0.985, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.015, y: -8 }}
-                    transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <SquarePhoto
-                      src={activeCharacter.image}
-                      alt={`${activeCharacter.name}, ${activeCharacter.role}`}
-                      className="rounded-[2rem] border border-black/10 bg-white shadow-[0_24px_70px_rgba(17,17,17,0.14)]"
-                      imageClassName="scale-[1.018]"
-                      sizes="(max-width: 1024px) 100vw, 460px"
-                    />
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-5 flex items-center justify-between gap-4">
-                  <div className="flex gap-2">
-                    {featuredWellnessCharacters.map((character, index) => (
-                      <button
-                        key={character.name}
-                        type="button"
-                        onClick={() => setActiveIndex(index)}
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          activeIndex === index
-                            ? "w-10 bg-[var(--ft-menta)]"
-                            : "w-2.5 bg-black/18 hover:bg-black/38"
-                        }`}
-                        aria-label={`Show ${character.name}`}
-                      />
-                    ))}
-                  </div>
-
-                  <p className="rounded-full border border-black/10 bg-white/74 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-black/42 backdrop-blur-md">
-                    {activeIndex + 1} / {featuredWellnessCharacters.length}
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex min-h-[500px] flex-col justify-between p-6 sm:p-8 lg:p-10">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeLabel}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.28 }}
-                  >
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className="h-3.5 w-3.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: activeCharacter.accent }}
-                      />
-
-                      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-                        {activeCharacter.role}
-                      </p>
-
-                      <span className="h-px w-8 bg-black/14" />
-
-                      <p className="text-xs font-black uppercase tracking-[0.22em] text-black/42">
-                        {activeCharacter.format}
-                      </p>
-                    </div>
-
-                    <h3 className="ft-display ft-text-balance mt-7 max-w-5xl text-[clamp(3rem,6vw,6.25rem)] leading-[0.96] tracking-[0.002em] text-black">
-                      {activeCharacter.name}
-                    </h3>
-
-                    <p className="mt-7 max-w-3xl text-xl font-black leading-9 text-black/78 sm:text-2xl sm:leading-10">
-                      {activeCharacter.headline}
-                    </p>
-
-                    <div className="mt-8 grid gap-4 border-y border-black/10 py-6 md:grid-cols-2">
-                      <div className="rounded-[1.5rem] border border-black/10 bg-white/74 p-4 backdrop-blur-md">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-black/34">
-                          Guest Feeling
-                        </p>
-
-                        <p className="mt-2 text-sm font-semibold leading-7 text-black/68 sm:text-base">
-                          {activeCharacter.mood}
-                        </p>
-                      </div>
-
-                      <div className="rounded-[1.5rem] border border-black/10 bg-white/74 p-4 backdrop-blur-md">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-black/34">
-                          Why It Stands Out
-                        </p>
-
-                        <p className="mt-2 text-sm font-semibold leading-7 text-black/68 sm:text-base">
-                          {activeCharacter.experience}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-10 flex flex-col gap-3 border-t border-black/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex gap-3">
-                    <ActionButton onClick={showPrevious} tone="denimPomodori">
-                      Previous
-                    </ActionButton>
-
-                    <ActionButton onClick={showNext} tone="citrineMenta">
-                      Next
-                    </ActionButton>
-                  </div>
-
-                  <BrandButton href="/#experiences" tone="violaBlush">
-                    Find Experiences
-                    <TextArrow />
-                  </BrandButton>
-                </div>
-              </div>
-            </div>
+          <div className="mt-12 grid gap-x-9 gap-y-12 md:grid-cols-3">
+            {featuredWellnessCharacters.map((character) => (
+              <WellnessPosterCard key={character.name} character={character} />
+            ))}
           </div>
         </Reveal>
       </div>
@@ -599,7 +507,8 @@ function GuestPath() {
                   </p>
 
                   <p className="mt-2 text-sm font-semibold leading-7 text-black/68">
-                    Discover the host, feel the freshness, and choose the wellness food moment you want to join.
+                    Discover the host, feel the freshness, and choose the wellness food moment you
+                    want to join.
                   </p>
                 </div>
               </div>
@@ -667,7 +576,7 @@ export default function WellnessPage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
       <WellnessHero />
       <WellnessSignalTicker />
-      <FeaturedWellnessCarousel />
+      <FeaturedWellnessCharacters />
       <GuestPath />
       <JoinWellnessCharacters />
     </main>
