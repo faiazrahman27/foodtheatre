@@ -377,8 +377,8 @@ function mapSanityFoodCharacterToProfile(
   const cutoutImage = getImageUrl(document.cutoutImage);
   const cutoutImageAlt = getImageAlt(document.cutoutImage);
 
-  const heroImage = getImageUrl(document.heroImage);
-  const heroImageAlt = getImageAlt(document.heroImage);
+  const heroImage = portraitImage;
+  const heroImageAlt = portraitImageAlt;
 
   const cardHeadline = cleanString(document.cardHeadline);
   const cardShape = getCardShape(document.cardShape);
@@ -412,8 +412,6 @@ function mapSanityFoodCharacterToProfile(
     !portraitImageAlt ||
     !cutoutImage ||
     !cutoutImageAlt ||
-    !heroImage ||
-    !heroImageAlt ||
     !cardHeadline ||
     !cardShape ||
     !cardImageBoxClassName ||
