@@ -1,5 +1,4 @@
 import {
-  getFoodCharacterCategory,
   isFoodCharacterCategorySlug,
   type FoodCharacterCardShape,
   type FoodCharacterConnectedExperience,
@@ -12,6 +11,18 @@ import { sanityClient } from "@/lib/sanity/client";
 type SanityImageField = {
   url?: string | null;
   alt?: string | null;
+};
+
+type SanityCategoryPreset = {
+  label?: string | null;
+  slug?: string | null;
+  accentColor?: string | null;
+  accentSoftColor?: string | null;
+};
+
+type SanityReusableTag = {
+  label?: string | null;
+  value?: string | null;
 };
 
 type SanityConnectedExperience = {
@@ -27,7 +38,7 @@ type SanityMenuItem = {
   description?: string | null;
   price?: string | null;
   image?: SanityImageField | null;
-  dietaryTags?: string[] | null;
+  dietaryTags?: SanityReusableTag[] | null;
 };
 
 type SanityMenuSection = {
@@ -38,7 +49,9 @@ type SanityMenuSection = {
 
 type SanityFoodCharacterDocument = {
   _id?: string;
-  category?: string | null;
+
+  categoryPreset?: SanityCategoryPreset | null;
+
   slug?: string | null;
   name?: string | null;
   role?: string | null;
@@ -56,9 +69,6 @@ type SanityFoodCharacterDocument = {
   cardShape?: FoodCharacterCardShape | null;
   cardImageBoxClassName?: string | null;
 
-  accentColor?: string | null;
-  accentSoftColor?: string | null;
-
   shortIntro?: string | null;
   bio?: string | null;
 
@@ -66,8 +76,8 @@ type SanityFoodCharacterDocument = {
   website?: string | null;
   facebook?: string | null;
 
-  cuisineStyleFormat?: string[] | null;
-  collaborationTypes?: string[] | null;
+  foodStyleTags?: SanityReusableTag[] | null;
+  experienceFormats?: SanityReusableTag[] | null;
   bringsToTable?: string[] | null;
   connectedExperiences?: SanityConnectedExperience[] | null;
 
@@ -86,7 +96,6 @@ type SanityFoodCharacterDocument = {
 
 const FOOD_CHARACTER_PROJECTION = `
   _id,
-  category,
   name,
   "slug": slug.current,
   role,
@@ -95,6 +104,14 @@ const FOOD_CHARACTER_PROJECTION = `
   location,
   availability,
   relocation,
+
+  categoryPreset->{
+    label,
+    slug,
+    accentColor,
+    accentSoftColor
+  },
+
   portraitImage{
     "url": asset->url,
     alt
@@ -107,25 +124,36 @@ const FOOD_CHARACTER_PROJECTION = `
     "url": asset->url,
     alt
   },
+
   cardHeadline,
   cardShape,
   cardImageBoxClassName,
-  accentColor,
-  accentSoftColor,
+
   shortIntro,
   bio,
+
   instagram,
   website,
   facebook,
-  cuisineStyleFormat,
-  collaborationTypes,
+
+  foodStyleTags[]->{
+    label,
+    value
+  },
+  experienceFormats[]->{
+    label,
+    value
+  },
+
   bringsToTable,
+
   connectedExperiences[]{
     _key,
     title,
     format,
     description
   },
+
   menu{
     title,
     subtitle,
@@ -143,10 +171,14 @@ const FOOD_CHARACTER_PROJECTION = `
           "url": asset->url,
           alt
         },
-        dietaryTags
+        dietaryTags[]->{
+          label,
+          value
+        }
       }
     }
   },
+
   sortOrder,
   isFeatured,
   isPublished
@@ -156,7 +188,7 @@ const FOOD_CHARACTER_BY_SLUG_QUERY = `
   *[
     _type == "foodCharacter" &&
     isPublished == true &&
-    category == $category &&
+    categoryPreset->slug == $category &&
     slug.current == $slug
   ][0]{
     ${FOOD_CHARACTER_PROJECTION}
@@ -168,7 +200,7 @@ const FEATURED_FOOD_CHARACTERS_BY_CATEGORY_QUERY = `
     _type == "foodCharacter" &&
     isPublished == true &&
     isFeatured == true &&
-    category == $category
+    categoryPreset->slug == $category
   ] | order(sortOrder asc, name asc){
     ${FOOD_CHARACTER_PROJECTION}
   }
@@ -185,6 +217,22 @@ function cleanStringArray(value: unknown): string[] {
 
   return value
     .map((item) => cleanString(item))
+    .filter((item) => item.length > 0);
+}
+
+function cleanReusableTagLabels(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return "";
+      }
+
+      return cleanString((item as SanityReusableTag).label);
+    })
     .filter((item) => item.length > 0);
 }
 
@@ -259,7 +307,7 @@ function mapMenuItems(
     const price = cleanString(item.price);
     const image = getImageUrl(item.image);
     const imageAlt = getImageAlt(item.image, name || "Food Theatre menu item");
-    const dietaryTags = cleanStringArray(item.dietaryTags);
+    const dietaryTags = cleanReusableTagLabels(item.dietaryTags);
 
     if (!name && !description && !price && !image) {
       return;
@@ -315,15 +363,17 @@ function mapSanityFoodCharacterToProfile(
     return null;
   }
 
-  const category = cleanString(document.category);
+  const category = cleanString(document.categoryPreset?.slug);
 
   if (!isFoodCharacterCategorySlug(category)) {
     return null;
   }
 
-  const categoryMeta = getFoodCharacterCategory(category);
+  const categoryLabel = cleanString(document.categoryPreset?.label);
+  const accentColor = cleanString(document.categoryPreset?.accentColor);
+  const accentSoftColor = cleanString(document.categoryPreset?.accentSoftColor);
 
-  if (!categoryMeta) {
+  if (!categoryLabel || !accentColor || !accentSoftColor) {
     return null;
   }
 
@@ -338,8 +388,7 @@ function mapSanityFoodCharacterToProfile(
   const city = cleanString(document.city);
   const country = cleanString(document.country);
   const location =
-    cleanString(document.location) ||
-    [city, country].filter(Boolean).join(", ");
+    cleanString(document.location) || [city, country].filter(Boolean).join(", ");
 
   const portraitImage = getImageUrl(document.portraitImage);
   const cutoutImage = getImageUrl(document.cutoutImage);
@@ -350,8 +399,8 @@ function mapSanityFoodCharacterToProfile(
 
   const heroImage = getImageUrl(document.heroImage) || portraitImage;
 
-  const cuisineStyleFormat = cleanStringArray(document.cuisineStyleFormat);
-  const collaborationTypes = cleanStringArray(document.collaborationTypes);
+  const cuisineStyleFormat = cleanReusableTagLabels(document.foodStyleTags);
+  const collaborationTypes = cleanReusableTagLabels(document.experienceFormats);
   const bringsToTable = cleanStringArray(document.bringsToTable);
   const connectedExperiences = mapConnectedExperiences(
     document.connectedExperiences
@@ -366,7 +415,7 @@ function mapSanityFoodCharacterToProfile(
   return {
     id: cleanString(document._id) || `character-${slug}`,
     category,
-    categoryLabel: categoryMeta.label,
+    categoryLabel,
     slug,
     name,
     role,
@@ -384,10 +433,7 @@ function mapSanityFoodCharacterToProfile(
     ),
 
     cutoutImage,
-    cutoutImageAlt: getImageAlt(
-      document.cutoutImage,
-      `${name} transparent cutout`
-    ),
+    cutoutImageAlt: getImageAlt(document.cutoutImage, `${name} transparent cutout`),
 
     heroImage,
     heroImageAlt: getImageAlt(
@@ -395,15 +441,14 @@ function mapSanityFoodCharacterToProfile(
       `${name} Food Theatre profile image`
     ),
 
-    cardHeadline: cleanString(document.cardHeadline) || "Food Story",
+    cardHeadline: cleanString(document.cardHeadline),
     cardShape: getCardShape(document.cardShape),
     cardImageBoxClassName:
       cleanString(document.cardImageBoxClassName) ||
       "right-0 bottom-[38px] h-[236px] w-[168px]",
 
-    accentColor: cleanString(document.accentColor) || categoryMeta.accentColor,
-    accentSoftColor:
-      cleanString(document.accentSoftColor) || categoryMeta.accentSoftColor,
+    accentColor,
+    accentSoftColor,
 
     shortIntro: cleanString(document.shortIntro),
     bio: cleanString(document.bio),
@@ -478,6 +523,7 @@ export async function getFeaturedFoodCharacterProfilesByCategoryFromSanity(
 
   return profiles.sort(
     (firstProfile, secondProfile) =>
-      firstProfile.sortOrder - secondProfile.sortOrder
+      firstProfile.sortOrder - secondProfile.sortOrder ||
+      firstProfile.name.localeCompare(secondProfile.name)
   );
 }

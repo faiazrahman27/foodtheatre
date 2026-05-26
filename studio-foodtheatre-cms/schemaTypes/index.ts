@@ -5,9 +5,9 @@ import { foodCharacterCategoryPreset } from "./foodCharacterCategoryPreset";
 import { foodStyleTag } from "./foodStyleTag";
 
 export const schemaTypes = [
+  foodCharacter,
   foodCharacterCategoryPreset,
   foodStyleTag,
   experienceFormat,
   dietaryTag,
-  foodCharacter,
 ];
