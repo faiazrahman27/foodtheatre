@@ -478,7 +478,7 @@ function FloatingFoodHero({
               <TextArrow />
             </BrandButton>
 
-            <BrandButton href="#join" tone="citrineMenta">
+            <BrandButton href="be-a-character" tone="citrineMenta">
               Become a Character
               <TextArrow />
             </BrandButton>
@@ -935,7 +935,7 @@ function BecomeCharacterBox() {
               </p>
             </div>
 
-            <BrandButton href="/#join" tone="denimPomodori" className="md:justify-self-end">
+            <BrandButton href="/be-a-character" tone="denimPomodori" className="md:justify-self-end">
               Become a Character
               <TextArrow />
             </BrandButton>

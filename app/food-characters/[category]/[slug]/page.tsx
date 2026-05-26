@@ -1269,7 +1269,7 @@ export default function FoodCharacterProfilePage() {
                     />
 
                     <TagGroup
-                      label="Guest formats"
+                      label="Working formats"
                       items={profile.collaborationTypes}
                       accentColor="rgba(255, 253, 248, 0.95)"
                     />

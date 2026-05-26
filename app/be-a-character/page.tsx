@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { GradientBackground } from "@/components/ui/paper-design-shader-background";
 
 const CONTACT_EMAIL = "hello@foodtheatre.com";
@@ -24,32 +24,48 @@ const applicantTypes = [
   "Producer / brand",
   "Wellness food host",
   "Caterer / private table host",
+  "Bartender / drink creator",
   "Other",
 ];
 
 const preferredFoodTheatreLocations = [
   "Bologna Food Theatre",
-  "Scuderia Food Stage",
+  "Food Stage / pop-up location",
   "Private venue",
+  "Guest home / private table",
   "Restaurant / brand location",
-  "Pop-up location",
+  "Own studio / kitchen space",
+  "Delivery area",
   "Travelling / flexible",
   "Not sure yet",
 ];
 
-const experienceFormats = [
-  "Pop-up",
-  "Private table",
-  "Private dinner",
-  "Tasting",
-  "Workshop",
-  "Special event",
+const availabilityOptions = [
+  "Pop-up availability",
   "Food delivery",
-  "Content shoot",
-  "Brand activation",
-  "Community table",
   "Weekly availability",
-  "Seasonal experience",
+  "Monthly availability",
+  "Special events",
+  "Private tables",
+  "Private dinners",
+  "Seasonal residency",
+  "Brand or venue collaboration",
+  "Travel available",
+];
+
+const experienceFormatOptions = [
+  "Tasting menu",
+  "Workshop",
+  "Supper club",
+  "Cultural dinner",
+  "Chef’s table",
+  "Brunch table",
+  "Product tasting",
+  "Content-friendly table",
+  "Community table",
+  "Private dining",
+  "Cooking class",
+  "Food story session",
 ];
 
 const preferredReplyOptions = ["Email", "Phone", "WhatsApp", "Instagram"];
@@ -60,7 +76,7 @@ function FieldLabel({
   required = false,
 }: {
   htmlFor: string;
-  children: React.ReactNode;
+  children: ReactNode;
   required?: boolean;
 }) {
   return (
@@ -149,10 +165,12 @@ function SelectInput({
 
 function CheckboxGroup({
   legend,
+  description,
   name,
   options,
 }: {
   legend: string;
+  description?: string;
   name: string;
   options: string[];
 }) {
@@ -160,7 +178,13 @@ function CheckboxGroup({
     <fieldset className="rounded-[1.5rem] border border-black/10 bg-white/88 p-4">
       <legend className="px-1 text-sm font-semibold text-black/70">{legend}</legend>
 
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      {description ? (
+        <p className="mt-2 text-sm font-semibold leading-7 text-black/52">
+          {description}
+        </p>
+      ) : null}
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {options.map((option) => (
           <label
             key={option}
@@ -183,11 +207,11 @@ function CheckboxGroup({
 function FileUploadInput() {
   return (
     <div className="rounded-[1.5rem] border border-black/10 bg-white/88 p-4">
-      <FieldLabel htmlFor="menuUpload">Menu upload</FieldLabel>
+      <FieldLabel htmlFor="menuUpload">Menu, sample dishes, or visual reference</FieldLabel>
 
       <p className="mt-2 text-sm font-semibold leading-7 text-black/52">
-        Show-off field for now. Later this can become a real upload system for menu files,
-        photos, PDFs, or documents.
+        Share a menu, dish photo, PDF, presentation, or document that helps us understand your food
+        direction.
       </p>
 
       <input
@@ -230,11 +254,15 @@ export default function BeACharacterPage() {
     const facebook = String(formData.get("facebook") || "");
     const websiteUrl = String(formData.get("websiteUrl") || "");
     const otherSocial = String(formData.get("otherSocial") || "");
-    const availability = String(formData.get("availability") || "");
     const foodStyle = String(formData.get("foodStyle") || "");
     const shortIntro = String(formData.get("shortIntro") || "");
     const experience = String(formData.get("experience") || "");
     const message = String(formData.get("message") || "");
+
+    const selectedAvailability = formData
+      .getAll("availabilityOptions")
+      .map((value) => String(value))
+      .filter(Boolean);
 
     const selectedFormats = formData
       .getAll("experienceFormats")
@@ -266,10 +294,12 @@ export default function BeACharacterPage() {
       `Website: ${websiteUrl || "Not provided"}`,
       `Other social link: ${otherSocial || "Not provided"}`,
       "",
-      `Available formats: ${selectedFormats.length ? selectedFormats.join(", ") : "Not provided"}`,
-      `Availability / timing: ${availability || "Not provided"}`,
-      `Food style / cuisine / format: ${foodStyle || "Not provided"}`,
-      `Menu upload filename: ${uploadedFileName}`,
+      `Availability: ${
+        selectedAvailability.length ? selectedAvailability.join(", ") : "Not provided"
+      }`,
+      `Experience formats: ${selectedFormats.length ? selectedFormats.join(", ") : "Not provided"}`,
+      `Food style / cuisine / direction: ${foodStyle || "Not provided"}`,
+      `Menu or reference file selected: ${uploadedFileName}`,
       "",
       "Short introduction:",
       shortIntro || "Not provided",
@@ -281,8 +311,6 @@ export default function BeACharacterPage() {
       message || "Not provided",
       "",
       `Sent from Food Theatre Be a Character page, ${currentYear}.`,
-      "",
-      "Note: file upload is currently a show-off UI field and is not attached automatically.",
     ].join("\n");
 
     const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
@@ -323,12 +351,12 @@ export default function BeACharacterPage() {
         </p>
 
         <h1 className="ft-display mt-5 max-w-3xl text-center text-[clamp(2.6rem,6vw,5rem)] leading-[0.95] tracking-[0.002em]">
-          Apply to Become a Food Character.
+          Bring Your Food Story to the Stage.
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl text-center text-base font-semibold leading-8 text-black/60">
-          Share your food point of view, location, availability, social presence, and the kind of
-          Food Theatre moment you would like to create. This is a preview application form for now.
+          Tell us who you are, where you create, how guests can experience your food, and what kind
+          of Food Theatre moment you want to bring to life.
         </p>
 
         <div className="mt-10 grid w-full gap-5 md:grid-cols-2">
@@ -390,7 +418,7 @@ export default function BeACharacterPage() {
           <SelectInput
             id="applicantType"
             name="applicantType"
-            label="What are you?"
+            label="What best describes you?"
             required
             options={applicantTypes}
           />
@@ -398,7 +426,7 @@ export default function BeACharacterPage() {
           <SelectInput
             id="characterCategory"
             name="characterCategory"
-            label="Best character category"
+            label="Which Food Character world fits you best?"
             required
             options={characterCategories}
           />
@@ -406,16 +434,9 @@ export default function BeACharacterPage() {
           <SelectInput
             id="preferredLocation"
             name="preferredLocation"
-            label="Preferred Food Theatre / Stage location"
+            label="Where would you like to host or appear?"
             required
             options={preferredFoodTheatreLocations}
-          />
-
-          <TextInput
-            id="availability"
-            name="availability"
-            label="Availability / timing"
-            placeholder="Example: weekends, 3 times a week, monthly pop-ups"
           />
 
           <TextInput
@@ -454,7 +475,7 @@ export default function BeACharacterPage() {
             <TextInput
               id="foodStyle"
               name="foodStyle"
-              label="Food style / cuisine / format"
+              label="Food style, cuisine, or creative direction"
               required
               placeholder="Example: Italian-inspired tasting, vegan brunch, cultural dinner, pastry workshop"
             />
@@ -462,9 +483,19 @@ export default function BeACharacterPage() {
 
           <div className="md:col-span-2">
             <CheckboxGroup
-              legend="Formats you can offer"
+              legend="Availability"
+              description="Choose how and when guests, stages, or partners could work with you."
+              name="availabilityOptions"
+              options={availabilityOptions}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <CheckboxGroup
+              legend="Experience formats"
+              description="Choose the kind of food moments you would like to create."
               name="experienceFormats"
-              options={experienceFormats}
+              options={experienceFormatOptions}
             />
           </div>
 
@@ -474,7 +505,7 @@ export default function BeACharacterPage() {
 
           <div className="md:col-span-2">
             <FieldLabel htmlFor="shortIntro" required>
-              Short introduction
+              Your food story
             </FieldLabel>
 
             <textarea
@@ -482,31 +513,31 @@ export default function BeACharacterPage() {
               name="shortIntro"
               required
               rows={4}
-              placeholder="Tell us who you are and what kind of food moment you want to create."
+              placeholder="Introduce yourself and the kind of food moment you want to create."
               className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white/92 p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
             />
           </div>
 
           <div className="md:col-span-2">
-            <FieldLabel htmlFor="experience">Previous experience</FieldLabel>
+            <FieldLabel htmlFor="experience">Previous food, hosting, or creative experience</FieldLabel>
 
             <textarea
               id="experience"
               name="experience"
               rows={4}
-              placeholder="Example: dinners hosted, events, restaurant work, content, delivery, catering, workshops."
+              placeholder="Example: dinners hosted, restaurant work, content, delivery, catering, workshops, events, or brand collaborations."
               className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white/92 p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
             />
           </div>
 
           <div className="md:col-span-2">
-            <FieldLabel htmlFor="message">Application note</FieldLabel>
+            <FieldLabel htmlFor="message">Anything else you want to share?</FieldLabel>
 
             <textarea
               id="message"
               name="message"
               rows={5}
-              placeholder="Anything else you want Food Theatre to know?"
+              placeholder="Share any detail that helps us understand your table, audience, food world, or preferred collaboration."
               className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white/92 p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/30 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
             />
           </div>
@@ -518,7 +549,7 @@ export default function BeACharacterPage() {
             required
             className="mt-1 h-4 w-4 shrink-0 accent-[var(--ft-pomodori)]"
           />
-          Please use my application details to review and reply to this Food Character request.
+          Food Theatre may use my application details to review my request and contact me.
         </label>
 
         <button

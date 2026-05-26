@@ -612,7 +612,7 @@ function JoinArtisans() {
                 </div>
 
                 <div className="flex flex-col gap-3 md:justify-self-end">
-                  <BrandButton href="/#join" tone="citrineMenta">
+                  <BrandButton href="/be-a-character" tone="citrineMenta">
                     Become a Character
                     <TextArrow />
                   </BrandButton>

@@ -614,7 +614,7 @@ function JoinGlobalCharacters() {
                 </div>
 
                 <div className="flex flex-col gap-3 md:justify-self-end">
-                  <BrandButton href="/#join" tone="denimPomodori">
+                  <BrandButton href="/be-a-character" tone="denimPomodori">
                     Become a Character
                     <TextArrow />
                   </BrandButton>

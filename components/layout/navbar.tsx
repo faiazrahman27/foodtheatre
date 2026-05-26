@@ -79,7 +79,7 @@ const mainNavItems = [
 ] as const;
 
 const actionNavItems = [
-  { label: "Be a Character", href: "/#join" },
+  { label: "Be a Character", href: "/be-a-character" },
   { label: "Host a Theatre", href: "/#theatre" },
 ] as const;
 
