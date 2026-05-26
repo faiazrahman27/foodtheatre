@@ -1,13 +1,4 @@
-import { defineField, defineType } from "sanity";
-
-const foodCharacterCategories = [
-  { title: "Innovators", value: "innovators" },
-  { title: "Creators", value: "creators" },
-  { title: "Artisanal", value: "artisanal" },
-  { title: "Global", value: "global" },
-  { title: "Wellness", value: "wellness" },
-  { title: "FoodCo.s", value: "foodcos" },
-];
+import { defineArrayMember, defineField, defineType } from "sanity";
 
 const cardShapeOptions = [
   { title: "Circle", value: "circle" },
@@ -42,13 +33,12 @@ export const foodCharacter = defineType({
     }),
 
     defineField({
-      name: "category",
+      name: "categoryPreset",
       title: "Category",
-      type: "string",
-      options: {
-        list: foodCharacterCategories,
-        layout: "radio",
-      },
+      description:
+        "Select the reusable Food Character category. This controls the category slug, label, accent color, and soft accent color.",
+      type: "reference",
+      to: [{ type: "foodCharacterCategoryPreset" }],
       validation: (Rule) => Rule.required(),
     }),
 
@@ -104,7 +94,9 @@ export const foodCharacter = defineType({
     }),
     defineField({
       name: "relocation",
-      title: "Relocation / travel",
+      title: "Travel / availability area",
+      description:
+        "Customer-facing travel note. Example: Available for Bologna tables, private dinners, and selected city pop-ups.",
       type: "text",
       rows: 3,
       validation: (Rule) => Rule.required().max(260),
@@ -179,6 +171,8 @@ export const foodCharacter = defineType({
     defineField({
       name: "cardShape",
       title: "Category card shape",
+      description:
+        "This controls the individual poster/card shape for this character.",
       type: "string",
       options: {
         list: cardShapeOptions,
@@ -191,34 +185,17 @@ export const foodCharacter = defineType({
       name: "cardImageBoxClassName",
       title: "Card image position class",
       description:
-        "Keep the default unless a cutout needs manual visual adjustment.",
+        "Keep the default unless this character’s transparent cutout needs manual visual adjustment.",
       type: "string",
       initialValue: "right-0 bottom-[38px] h-[236px] w-[168px]",
       validation: (Rule) => Rule.required(),
     }),
 
     defineField({
-      name: "accentColor",
-      title: "Accent color",
-      description:
-        "Use an existing Food Theatre CSS value for now, for example var(--ft-citrine).",
-      type: "string",
-      initialValue: "var(--ft-citrine)",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "accentSoftColor",
-      title: "Soft accent color",
-      description:
-        "Use an rgba value for background glow, for example rgba(239, 209, 30, 0.18).",
-      type: "string",
-      initialValue: "rgba(239, 209, 30, 0.18)",
-      validation: (Rule) => Rule.required(),
-    }),
-
-    defineField({
       name: "shortIntro",
       title: "Short intro",
+      description:
+        "Customer-facing intro shown near the top of the individual profile page.",
       type: "text",
       rows: 3,
       validation: (Rule) => Rule.required().min(20).max(240),
@@ -226,6 +203,8 @@ export const foodCharacter = defineType({
     defineField({
       name: "bio",
       title: "Bio",
+      description:
+        "Customer-facing profile story shown in the main profile body.",
       type: "text",
       rows: 6,
       validation: (Rule) => Rule.required().min(80).max(1200),
@@ -248,25 +227,40 @@ export const foodCharacter = defineType({
     }),
 
     defineField({
-      name: "cuisineStyleFormat",
-      title: "Cuisine / style / format tags",
-      type: "array",
-      of: [{ type: "string" }],
-      validation: (Rule) => Rule.required().min(1),
-    }),
-    defineField({
-      name: "collaborationTypes",
-      title: "Collaboration types",
+      name: "foodStyleTags",
+      title: "Taste, style, and format",
       description:
-        "Examples: Daily, 3 times a week, Pop-up, Special events, Food delivery, Private table.",
+        "Select reusable tags instead of typing them manually for each character.",
       type: "array",
-      of: [{ type: "string" }],
-      validation: (Rule) => Rule.required().min(1),
+      of: [
+        defineArrayMember({
+          type: "reference",
+          to: [{ type: "foodStyleTag" }],
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1).unique(),
+    }),
+
+    defineField({
+      name: "experienceFormats",
+      title: "Ways to experience it",
+      description:
+        "Select reusable guest formats such as pop-up, private table, workshop, tasting, or delivery.",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "reference",
+          to: [{ type: "experienceFormat" }],
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1).unique(),
     }),
 
     defineField({
       name: "bringsToTable",
       title: "What they bring to the table",
+      description:
+        "Customer-facing value points shown on the individual profile page.",
       type: "array",
       of: [{ type: "string" }],
       validation: (Rule) => Rule.required().min(1),
@@ -277,7 +271,7 @@ export const foodCharacter = defineType({
       title: "Connected experiences",
       type: "array",
       of: [
-        defineField({
+        defineArrayMember({
           name: "connectedExperience",
           title: "Connected experience",
           type: "object",
@@ -315,27 +309,26 @@ export const foodCharacter = defineType({
     defineField({
       name: "menu",
       title: "Character menu",
+      description:
+        "Optional. Add this when the character has a menu or taste direction ready to show.",
       type: "object",
       fields: [
         defineField({
           name: "title",
           title: "Menu title",
           type: "string",
-          validation: (Rule) => Rule.required(),
         }),
         defineField({
           name: "subtitle",
           title: "Menu subtitle",
           type: "text",
           rows: 2,
-          validation: (Rule) => Rule.required(),
         }),
         defineField({
           name: "currency",
           title: "Currency",
           type: "string",
           initialValue: "EUR",
-          validation: (Rule) => Rule.required(),
         }),
         defineField({
           name: "note",
@@ -348,7 +341,7 @@ export const foodCharacter = defineType({
           title: "Menu sections",
           type: "array",
           of: [
-            defineField({
+            defineArrayMember({
               name: "menuSection",
               title: "Menu section",
               type: "object",
@@ -364,7 +357,7 @@ export const foodCharacter = defineType({
                   title: "Menu items",
                   type: "array",
                   of: [
-                    defineField({
+                    defineArrayMember({
                       name: "menuItem",
                       title: "Menu item",
                       type: "object",
@@ -408,8 +401,16 @@ export const foodCharacter = defineType({
                         defineField({
                           name: "dietaryTags",
                           title: "Dietary tags",
+                          description:
+                            "Select reusable dietary tags such as vegetarian, vegan, gluten-free, dairy-free, or contains nuts.",
                           type: "array",
-                          of: [{ type: "string" }],
+                          of: [
+                            defineArrayMember({
+                              type: "reference",
+                              to: [{ type: "dietaryTag" }],
+                            }),
+                          ],
+                          validation: (Rule) => Rule.unique(),
                         }),
                       ],
                       preview: {
@@ -437,7 +438,7 @@ export const foodCharacter = defineType({
   preview: {
     select: {
       title: "name",
-      subtitle: "category",
+      subtitle: "categoryPreset.label",
       media: "portraitImage",
     },
   },
