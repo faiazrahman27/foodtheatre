@@ -8,11 +8,17 @@ import { createPortal } from "react-dom";
 import { type FormEvent, type ReactNode, useEffect, useState } from "react";
 import {
   type FoodCharacterMenuItem,
+  type FoodCharacterMenuSection,
   type FoodCharacterProfile,
 } from "@/lib/food-character-profiles";
 import { findFoodCharacterProfileFromSanity } from "@/lib/sanity/food-character-profiles";
 
 const CONTACT_EMAIL = "hello@foodtheatre.com";
+
+const socialIconPaths: Record<string, string> = {
+  Instagram: "/social/instagram.png",
+  Facebook: "/social/facebook.png",
+};
 
 type RouteParams = {
   category?: string | string[];
@@ -348,28 +354,53 @@ function CharacterVisual({ profile }: { profile: FoodCharacterProfile }) {
   );
 }
 
+function SocialLinkButton({ label, href }: { label: string; href: string }) {
+  const iconPath = socialIconPaths[label];
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-black transition hover:-translate-y-0.5 hover:bg-[var(--ft-citrine)]"
+    >
+      {iconPath ? (
+        <Image
+          src={iconPath}
+          alt=""
+          width={16}
+          height={16}
+          aria-hidden="true"
+          className="h-4 w-4 shrink-0 object-contain"
+        />
+      ) : null}
+      <span>{label}</span>
+    </a>
+  );
+}
+
 function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
   return (
-    <div className="grid gap-4 rounded-[1.45rem] border border-black/10 bg-white/92 p-3 shadow-[0_12px_36px_rgba(17,17,17,0.05)] sm:grid-cols-[116px_1fr] sm:items-start">
+    <div className="flex h-full flex-col overflow-hidden rounded-[1.45rem] border border-black/10 bg-white/92 p-3 shadow-[0_12px_36px_rgba(17,17,17,0.05)]">
       {item.image ? (
-        <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[#fffdf8]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[1.15rem] bg-[#fffdf8]">
           <Image
             src={item.image}
             alt={item.imageAlt}
             fill
-            sizes="(max-width: 640px) 100vw, 116px"
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 320px"
             className="object-cover"
           />
         </div>
       ) : (
-        <div className="flex aspect-square items-center justify-center rounded-[1.15rem] bg-[#fffdf8]">
+        <div className="flex aspect-[4/3] items-center justify-center rounded-[1.15rem] bg-[#fffdf8]">
           <span className="text-[0.62rem] font-black uppercase tracking-[0.16em] text-black/32">
             Food moment
           </span>
         </div>
       )}
 
-      <div className="min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col pt-4">
         <div className="flex items-start justify-between gap-3">
           <h5 className="text-base font-black leading-tight text-black">{item.name}</h5>
 
@@ -387,7 +418,7 @@ function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
         ) : null}
 
         {item.dietaryTags?.length ? (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
             {item.dietaryTags.map((tag) => (
               <span
                 key={tag}
@@ -403,24 +434,141 @@ function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
   );
 }
 
-function MenuArtwork({
+function MenuPreviewCard({
   profile,
-  large = false,
+  onOpen,
 }: {
   profile: FoodCharacterProfile;
-  large?: boolean;
+  onOpen: () => void;
 }) {
   const sections = profile.menu.sections;
-  const hasMenuSubtitle = Boolean(profile.menu.subtitle);
-  const hasMenuCurrency = Boolean(profile.menu.currency);
-  const hasMenuNote = Boolean(profile.menu.note);
+  const totalItems = sections.reduce((count, section) => count + section.items.length, 0);
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffdf8] p-4 shadow-[0_24px_80px_rgba(17,17,17,0.10)] sm:p-5 ${
-        large ? "w-full max-w-[860px]" : "w-full"
-      }`}
+    <button
+      type="button"
+      onClick={onOpen}
+      className="block w-full text-left transition duration-300 hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
+      aria-label={`Open ${profile.name} menu`}
     >
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffdf8] p-5 shadow-[0_24px_80px_rgba(17,17,17,0.10)]">
+        <div
+          className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full opacity-70"
+          style={{ backgroundColor: profile.accentColor }}
+        />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-[var(--ft-blush)]/34" />
+        <div className="pointer-events-none absolute bottom-14 right-10 h-9 w-9 rounded-full bg-[var(--ft-menta)]/70" />
+
+        <div className="relative z-10">
+          <div className="grid gap-5 border-b border-black/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-start">
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
+                Menu preview
+              </p>
+
+              {profile.menu.title ? (
+                <h3 className="ft-display mt-3 max-w-xl text-[clamp(2.35rem,6vw,4.6rem)] leading-[0.92] tracking-[0.002em]">
+                  {profile.menu.title}
+                </h3>
+              ) : (
+                <h3 className="ft-display mt-3 max-w-xl text-[clamp(2.35rem,6vw,4.6rem)] leading-[0.92] tracking-[0.002em]">
+                  Taste story
+                </h3>
+              )}
+
+              <p className="mt-3 text-sm font-black uppercase tracking-[0.16em] text-black/52">
+                By {profile.name}
+                {profile.role ? ` · ${profile.role}` : ""}
+              </p>
+            </div>
+
+            <Image
+              src="/brand/foodtheatre-logo.png"
+              alt="Food Theatre logo"
+              width={96}
+              height={96}
+              className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16"
+            />
+          </div>
+
+          {profile.menu.subtitle ? (
+            <p className="mt-5 max-w-2xl rounded-[1.5rem] border border-black/10 bg-white/80 p-4 text-sm font-semibold leading-7 text-black/66 backdrop-blur-md">
+              {profile.menu.subtitle}
+            </p>
+          ) : null}
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[1.35rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
+              <p className="text-[0.66rem] font-black uppercase tracking-[0.18em] text-black/36">
+                Sections
+              </p>
+              <p className="mt-2 text-2xl font-black text-black">{sections.length}</p>
+            </div>
+
+            <div className="rounded-[1.35rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
+              <p className="text-[0.66rem] font-black uppercase tracking-[0.18em] text-black/36">
+                Dishes
+              </p>
+              <p className="mt-2 text-2xl font-black text-black">{totalItems}</p>
+            </div>
+
+            <div className="rounded-[1.35rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
+              <p className="text-[0.66rem] font-black uppercase tracking-[0.18em] text-black/36">
+                Currency
+              </p>
+              <p className="mt-2 text-2xl font-black text-black">
+                {profile.menu.currency || "—"}
+              </p>
+            </div>
+          </div>
+
+          {sections.length ? (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {sections.map((section, index) => (
+                <span
+                  key={section.id}
+                  className="rounded-full border border-black/10 bg-white/88 px-3 py-2 text-[0.68rem] font-black uppercase tracking-[0.11em] text-black/58"
+                >
+                  {String(index + 1).padStart(2, "0")} · {section.title}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-black text-white">
+            Open full menu
+            <TextArrow />
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function MenuSliderArtwork({ profile }: { profile: FoodCharacterProfile }) {
+  const sections = profile.menu.sections;
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveSectionIndex(0);
+  }, [profile.id]);
+
+  const activeSection = sections[activeSectionIndex];
+
+  const goToPreviousSection = () => {
+    setActiveSectionIndex((currentIndex) =>
+      currentIndex === 0 ? sections.length - 1 : currentIndex - 1
+    );
+  };
+
+  const goToNextSection = () => {
+    setActiveSectionIndex((currentIndex) =>
+      currentIndex === sections.length - 1 ? 0 : currentIndex + 1
+    );
+  };
+
+  return (
+    <div className="relative w-full max-w-7xl overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffdf8] p-4 shadow-[0_24px_80px_rgba(17,17,17,0.10)] sm:p-5 lg:p-6">
       <div
         className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full opacity-70"
         style={{ backgroundColor: profile.accentColor }}
@@ -432,11 +580,11 @@ function MenuArtwork({
         <div className="grid gap-5 border-b border-black/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-start">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
-              Taste story
+              Full menu
             </p>
 
-            <h3 className="ft-display mt-3 max-w-xl text-[clamp(2.35rem,6vw,4.6rem)] leading-[0.92] tracking-[0.002em]">
-              {profile.menu.title}
+            <h3 className="ft-display mt-3 max-w-3xl text-[clamp(2.35rem,6vw,4.8rem)] leading-[0.92] tracking-[0.002em]">
+              {profile.menu.title || "Taste story"}
             </h3>
 
             <p className="mt-3 text-sm font-black uppercase tracking-[0.16em] text-black/52">
@@ -454,15 +602,15 @@ function MenuArtwork({
           />
         </div>
 
-        {hasMenuSubtitle || hasMenuCurrency ? (
+        {profile.menu.subtitle || profile.menu.currency ? (
           <div className="mt-5 rounded-[1.5rem] border border-black/10 bg-white/80 p-4 backdrop-blur-md">
-            {hasMenuSubtitle ? (
-              <p className="max-w-2xl text-sm font-semibold leading-7 text-black/66">
+            {profile.menu.subtitle ? (
+              <p className="max-w-3xl text-sm font-semibold leading-7 text-black/66">
                 {profile.menu.subtitle}
               </p>
             ) : null}
 
-            {hasMenuCurrency ? (
+            {profile.menu.currency ? (
               <p className="mt-3 text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
                 Prices in {profile.menu.currency}
               </p>
@@ -471,34 +619,83 @@ function MenuArtwork({
         ) : null}
 
         {sections.length ? (
-          <div className="mt-7 grid gap-5">
-            {sections.map((section, index) => (
-              <div
-                key={section.id}
-                className="rounded-[1.6rem] border border-black/10 bg-white/54 p-4 backdrop-blur-md"
-              >
-                <div className="flex items-center gap-3 border-b border-black/10 pb-4">
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-black text-black"
-                    style={{ backgroundColor: profile.accentColor }}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+          <>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {sections.map((section, index) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => setActiveSectionIndex(index)}
+                  className={`rounded-full border px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.13em] transition ${
+                    index === activeSectionIndex
+                      ? "border-black bg-black text-white"
+                      : "border-black/10 bg-white/86 text-black/54 hover:bg-[var(--ft-citrine)] hover:text-black"
+                  }`}
+                >
+                  {String(index + 1).padStart(2, "0")} · {section.title}
+                </button>
+              ))}
+            </div>
 
-                  <h4 className="text-sm font-black uppercase tracking-[0.18em] text-black/58">
-                    {section.title}
+            <div className="mt-7 rounded-[1.7rem] border border-black/10 bg-white/58 p-4 backdrop-blur-md sm:p-5">
+              <div className="flex flex-col gap-4 border-b border-black/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
+                    Menu set {String(activeSectionIndex + 1).padStart(2, "0")} of{" "}
+                    {String(sections.length).padStart(2, "0")}
+                  </p>
+
+                  <h4 className="ft-display mt-2 text-[clamp(2rem,4.4vw,4.2rem)] leading-[0.95]">
+                    {activeSection?.title}
                   </h4>
                 </div>
 
-                <div className="mt-4 grid gap-3">
-                  {section.items.map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
-                  ))}
-                </div>
+                {sections.length > 1 ? (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={goToPreviousSection}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-xl font-black text-black transition hover:bg-[var(--ft-citrine)]"
+                      aria-label="Previous menu section"
+                    >
+                      ←
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={goToNextSection}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-xl font-black text-black transition hover:bg-[var(--ft-citrine)]"
+                      aria-label="Next menu section"
+                    >
+                      →
+                    </button>
+                  </div>
+                ) : null}
               </div>
-            ))}
-          </div>
-        ) : hasMenuNote ? (
+
+              {activeSection?.items.length ? (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeSection.id}
+                    initial={{ opacity: 0, x: 18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -18 }}
+                    transition={{ duration: 0.24 }}
+                    className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+                  >
+                    {activeSection.items.map((item) => (
+                      <MenuItemCard key={item.id} item={item} />
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              ) : (
+                <p className="mt-5 text-sm font-semibold leading-7 text-black/58">
+                  This menu set is being shaped for the next Food Theatre moment.
+                </p>
+              )}
+            </div>
+          </>
+        ) : profile.menu.note ? (
           <div className="mt-7 rounded-[1.6rem] border border-black/10 bg-white/76 p-5">
             <p className="text-sm font-semibold leading-7 text-black/58">
               {profile.menu.note}
@@ -506,7 +703,7 @@ function MenuArtwork({
           </div>
         ) : null}
 
-        {hasMenuNote && sections.length ? (
+        {profile.menu.note && sections.length ? (
           <p className="mt-6 border-t border-black/10 pt-5 text-xs font-semibold leading-6 text-black/48">
             {profile.menu.note}
           </p>
@@ -738,7 +935,7 @@ function MenuModal({
           >
             <ModalCloseButton onClose={onClose} label="Close menu" />
 
-            <div className="mx-auto flex min-h-dvh max-w-5xl items-center justify-center py-14">
+            <div className="mx-auto flex min-h-dvh max-w-7xl items-center justify-center py-14">
               <motion.div
                 initial={{ opacity: 0, y: 22, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -748,7 +945,7 @@ function MenuModal({
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex justify-center">
-                  <MenuArtwork profile={profile} large />
+                  <MenuSliderArtwork profile={profile} />
                 </div>
               </motion.div>
             </div>
@@ -891,7 +1088,7 @@ export default function FoodCharacterProfilePage() {
     profile.cuisineStyleFormat.length > 0 || profile.collaborationTypes.length > 0;
 
   const hasRealMenuSection = profile.menu.sections.some(
-    (section) => section.title || section.items.length > 0
+    (section: FoodCharacterMenuSection) => section.title || section.items.length > 0
   );
 
   const hasMenu =
@@ -996,15 +1193,7 @@ export default function FoodCharacterProfilePage() {
               {socialLinks.length ? (
                 <div className="mt-8 flex flex-wrap gap-3">
                   {socialLinks.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-full border border-black/10 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-black transition hover:-translate-y-0.5 hover:bg-[var(--ft-citrine)]"
-                    >
-                      {link.label}
-                    </a>
+                    <SocialLinkButton key={link.label} label={link.label} href={link.href} />
                   ))}
                 </div>
               ) : null}
@@ -1118,14 +1307,7 @@ export default function FoodCharacterProfilePage() {
                 </ActionButton>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setMenuOpen(true)}
-                className="block w-full text-left transition duration-300 hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
-                aria-label={`Open ${profile.name} menu`}
-              >
-                <MenuArtwork profile={profile} />
-              </button>
+              <MenuPreviewCard profile={profile} onOpen={() => setMenuOpen(true)} />
             </div>
           </div>
         </section>
