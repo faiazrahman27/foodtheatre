@@ -124,7 +124,7 @@ const platformParts = [
   {
     title: "Characters",
     eyebrow: "Who brings the story",
-    href: "#characters",
+    href: "/food-characters",
     number: "02",
     color: "var(--ft-menta)",
     buttonTone: "mentaDenim",

@@ -38,10 +38,10 @@ const defaultLetterColors = [
 
 const Typewriter = ({
   text,
-  speed = 65,
-  initialDelay = 180,
-  waitTime = 900,
-  deleteSpeed = 18,
+  speed = 200,
+  initialDelay = 1,
+  waitTime = 10,
+  deleteSpeed = 80,
   loop = true,
   className,
   showCursor = true,

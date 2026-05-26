@@ -265,7 +265,7 @@ function mapMenuItems(
       return;
     }
 
-    const mappedItem: FoodCharacterMenuItem = {
+    mappedItems.push({
       id: cleanString(item._key) || toSafeId(name, `menu-item-${index + 1}`),
       name,
       description,
@@ -273,9 +273,7 @@ function mapMenuItems(
       image,
       imageAlt,
       dietaryTags,
-    };
-
-    mappedItems.push(mappedItem);
+    });
   });
 
   return mappedItems;
@@ -358,6 +356,11 @@ function mapSanityFoodCharacterToProfile(
   const connectedExperiences = mapConnectedExperiences(
     document.connectedExperiences
   );
+
+  const menuTitle = cleanString(document.menu?.title);
+  const menuSubtitle = cleanString(document.menu?.subtitle);
+  const menuCurrency = cleanString(document.menu?.currency);
+  const menuNote = cleanString(document.menu?.note);
   const menuSections = mapMenuSections(document.menu?.sections);
 
   return {
@@ -415,10 +418,10 @@ function mapSanityFoodCharacterToProfile(
     connectedExperiences,
 
     menu: {
-      title: cleanString(document.menu?.title) || `${name} Menu`,
-      subtitle: cleanString(document.menu?.subtitle),
-      currency: cleanString(document.menu?.currency) || "EUR",
-      note: cleanString(document.menu?.note),
+      title: menuTitle,
+      subtitle: menuSubtitle,
+      currency: menuCurrency,
+      note: menuNote,
       sections: menuSections,
     },
 

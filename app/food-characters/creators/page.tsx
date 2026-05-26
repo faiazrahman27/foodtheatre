@@ -464,7 +464,7 @@ function FeaturedCreators() {
           {loadingCreators ? (
             <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
               <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
-                Checking published Creator profiles in Sanity.
+                 Fresh Creator stories are being prepared for the next Food Theatre table.
               </p>
             </div>
           ) : featuredCreators.length > 0 ? (
@@ -476,7 +476,7 @@ function FeaturedCreators() {
           ) : (
             <div className="mt-12 rounded-[2rem] border border-black/10 bg-[#fffdf8] p-7">
               <p className="max-w-xl text-sm font-semibold leading-7 text-black/62">
-                Creator profiles will appear here when published in Sanity.
+                New Creator tables are being shaped. Come back soon to discover visual food stories, hosted tastings, and creator-led moments.
               </p>
             </div>
           )}

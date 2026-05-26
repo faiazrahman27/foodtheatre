@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useParams } from "next/navigation";
+import { createPortal } from "react-dom";
 import { type FormEvent, type ReactNode, useEffect, useState } from "react";
 import {
   type FoodCharacterMenuItem,
@@ -37,6 +38,20 @@ function getParamValue(value: string | string[] | undefined) {
   }
 
   return value || "";
+}
+
+function ModalPortal({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(children, document.body);
 }
 
 function BrandButton({
@@ -161,7 +176,7 @@ function ModalCloseButton({
     <button
       type="button"
       onClick={onClose}
-      className="fixed right-4 top-4 z-[120] flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white text-2xl font-black leading-none text-black shadow-[0_14px_34px_rgba(0,0,0,0.22)] transition hover:bg-[var(--ft-citrine)] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
+      className="fixed right-4 top-4 z-[2147483647] flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white text-3xl font-black leading-none text-black shadow-[0_18px_46px_rgba(0,0,0,0.28)] transition hover:bg-[var(--ft-citrine)] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)]"
       aria-label={label}
     >
       ×
@@ -204,11 +219,15 @@ function TagGroup({
 }
 
 function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
+  const homeBaseText = profile.city
+    ? `${profile.city} is the starting point for this Food Character’s table, story, and guest experience.`
+    : "A starting point for this Food Character’s table, story, and guest experience.";
+
   const items = [
     {
       label: "Home base",
       title: profile.location,
-      text: `${profile.city} is the starting point for this Food Character’s table, story, and guest experience.`,
+      text: homeBaseText,
     },
     {
       label: "Availability",
@@ -222,56 +241,44 @@ function ProfileSnapshot({ profile }: { profile: FoodCharacterProfile }) {
     },
   ].filter((item) => item.title || item.text);
 
+  if (!items.length) {
+    return null;
+  }
+
   return (
-    <div className="mt-8 grid gap-3">
-      <div className="grid gap-3 sm:grid-cols-3">
-        {items.map((item, index) => (
-          <motion.div
-            key={item.label}
-            whileHover={{ y: -4 }}
-            transition={{ type: "spring", stiffness: 240, damping: 24 }}
-            className="relative overflow-hidden rounded-[1.5rem] border border-black/10 bg-white/78 p-4 backdrop-blur-md"
-          >
-            <span
-              className="absolute right-4 top-4 h-3 w-3 rounded-full"
-              style={{
-                backgroundColor:
-                  index === 0
-                    ? profile.accentColor
-                    : index === 1
-                      ? "var(--ft-menta)"
-                      : "var(--ft-pomodori)",
-              }}
-            />
+    <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      {items.map((item, index) => (
+        <motion.div
+          key={item.label}
+          whileHover={{ y: -4 }}
+          transition={{ type: "spring", stiffness: 240, damping: 24 }}
+          className="relative overflow-hidden rounded-[1.5rem] border border-black/10 bg-white/78 p-4 backdrop-blur-md"
+        >
+          <span
+            className="absolute right-4 top-4 h-3 w-3 rounded-full"
+            style={{
+              backgroundColor:
+                index === 0
+                  ? profile.accentColor
+                  : index === 1
+                    ? "var(--ft-menta)"
+                    : "var(--ft-pomodori)",
+            }}
+          />
 
-            <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
-              {item.label}
-            </p>
+          <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-black/38">
+            {item.label}
+          </p>
 
-            <h3 className="mt-4 text-base font-black leading-tight text-black">
-              {item.title}
-            </h3>
+          <h3 className="mt-4 text-base font-black leading-tight text-black">
+            {item.title}
+          </h3>
 
-            <p className="mt-3 text-xs font-semibold leading-6 text-black/56">
-              {item.text}
-            </p>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2">
-        <TagGroup
-          label="Taste, style, and format"
-          items={profile.cuisineStyleFormat}
-          accentColor={profile.accentSoftColor}
-        />
-
-        <TagGroup
-          label="Ways to experience it"
-          items={profile.collaborationTypes}
-          accentColor="rgba(255, 255, 255, 0.88)"
-        />
-      </div>
+          <p className="mt-3 text-xs font-semibold leading-6 text-black/56">
+            {item.text}
+          </p>
+        </motion.div>
+      ))}
     </div>
   );
 }
@@ -319,7 +326,9 @@ function CharacterVisual({ profile }: { profile: FoodCharacterProfile }) {
             {profile.name}
           </h2>
 
-          <p className="mt-3 text-sm font-semibold text-black/58">{profile.role}</p>
+          {profile.role ? (
+            <p className="mt-3 text-sm font-semibold text-black/58">{profile.role}</p>
+          ) : null}
 
           {previewTags.length ? (
             <div className="mt-4 flex flex-wrap gap-2">
@@ -364,14 +373,18 @@ function MenuItemCard({ item }: { item: FoodCharacterMenuItem }) {
         <div className="flex items-start justify-between gap-3">
           <h5 className="text-base font-black leading-tight text-black">{item.name}</h5>
 
-          <span className="shrink-0 rounded-full bg-black px-3 py-1.5 text-xs font-black text-white">
-            {item.price}
-          </span>
+          {item.price ? (
+            <span className="shrink-0 rounded-full bg-black px-3 py-1.5 text-xs font-black text-white">
+              {item.price}
+            </span>
+          ) : null}
         </div>
 
-        <p className="mt-2 text-sm font-semibold leading-6 text-black/62">
-          {item.description}
-        </p>
+        {item.description ? (
+          <p className="mt-2 text-sm font-semibold leading-6 text-black/62">
+            {item.description}
+          </p>
+        ) : null}
 
         {item.dietaryTags?.length ? (
           <div className="mt-3 flex flex-wrap gap-1.5">
@@ -427,7 +440,8 @@ function MenuArtwork({
             </h3>
 
             <p className="mt-3 text-sm font-black uppercase tracking-[0.16em] text-black/52">
-              By {profile.name} · {profile.role}
+              By {profile.name}
+              {profile.role ? ` · ${profile.role}` : ""}
             </p>
           </div>
 
@@ -561,139 +575,141 @@ function ConnectionModal({
   };
 
   return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
-          className="fixed inset-0 z-[80] overflow-y-auto bg-black/42 px-4 py-6 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Connect with ${profile.name}`}
-          onClick={onClose}
-        >
-          <ModalCloseButton onClose={onClose} label="Close form" />
+    <ModalPortal>
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            className="fixed inset-0 z-[2147483646] overflow-y-auto overscroll-contain bg-black/72 px-4 py-6 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Connect with ${profile.name}`}
+            onClick={onClose}
+          >
+            <ModalCloseButton onClose={onClose} label="Close form" />
 
-          <div className="mx-auto flex min-h-full max-w-3xl items-center justify-center py-10">
-            <motion.div
-              initial={{ opacity: 0, y: 22, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              transition={{ duration: 0.28 }}
-              className="relative w-full overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffdf8] p-5 shadow-[0_30px_110px_rgba(0,0,0,0.30)] sm:p-7"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <div
-                className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-60"
-                style={{ backgroundColor: profile.accentColor }}
-              />
-
-              <div className="relative z-10 border-b border-black/10 pb-5 pr-12">
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
-                  Plan a food moment
-                </p>
-                <h2 className="ft-display mt-3 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95]">
-                  Connect with {profile.name}.
-                </h2>
-              </div>
-
-              <form onSubmit={handleSubmit} className="relative z-10 mt-6">
-                <input
-                  tabIndex={-1}
-                  autoComplete="off"
-                  name="website"
-                  className="hidden"
-                  aria-hidden="true"
+            <div className="mx-auto flex min-h-dvh max-w-3xl items-center justify-center py-14">
+              <motion.div
+                initial={{ opacity: 0, y: 22, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.28 }}
+                className="relative w-full overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffdf8] p-5 shadow-[0_30px_110px_rgba(0,0,0,0.30)] sm:p-7"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div
+                  className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-60"
+                  style={{ backgroundColor: profile.accentColor }}
                 />
 
-                <div className="grid gap-5 md:grid-cols-2">
-                  <TextInput
-                    id="fullName"
-                    name="fullName"
-                    label="Name"
-                    placeholder="Enter your name"
-                    required
-                    autoComplete="name"
-                    maxLength={90}
-                  />
-
-                  <TextInput
-                    id="email"
-                    name="email"
-                    label="Email"
-                    placeholder="Enter your email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    maxLength={120}
-                  />
-
-                  <TextInput
-                    id="phone"
-                    name="phone"
-                    label="Cell / WhatsApp"
-                    placeholder="Enter your number"
-                    type="tel"
-                    autoComplete="tel"
-                    maxLength={40}
-                  />
-
-                  <TextInput
-                    id="organization"
-                    name="organization"
-                    label="Organization, brand, or venue"
-                    placeholder="Optional"
-                    autoComplete="organization"
-                    maxLength={120}
-                  />
-
-                  <div className="md:col-span-2">
-                    <TextInput
-                      id="dateOrTiming"
-                      name="dateOrTiming"
-                      label="Preferred date or timing"
-                      placeholder="Example: weekend evening, next month, private dinner"
-                      maxLength={140}
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <FieldLabel htmlFor="message" required>
-                      Message
-                    </FieldLabel>
-
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={5}
-                      required
-                      maxLength={1200}
-                      placeholder={`Tell us how you would like to connect with ${profile.name}`}
-                      className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/32 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
-                    />
-                  </div>
+                <div className="relative z-10 border-b border-black/10 pb-5 pr-12">
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-black/42">
+                    Plan a food moment
+                  </p>
+                  <h2 className="ft-display mt-3 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95]">
+                    Connect with {profile.name}.
+                  </h2>
                 </div>
 
-                <button
-                  type="submit"
-                  className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--ft-denim)] px-6 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[var(--ft-pomodori)] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)] sm:w-auto"
-                >
-                  Send my request
-                  <span>→</span>
-                </button>
+                <form onSubmit={handleSubmit} className="relative z-10 mt-6">
+                  <input
+                    tabIndex={-1}
+                    autoComplete="off"
+                    name="website"
+                    className="hidden"
+                    aria-hidden="true"
+                  />
 
-                <p className="mt-4 text-sm font-semibold leading-7 text-black/48">
-                  {sent
-                    ? "Your email app should open with the request ready to send."
-                    : "Fields marked with an asterisk are required."}
-                </p>
-              </form>
-            </motion.div>
-          </div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <TextInput
+                      id="fullName"
+                      name="fullName"
+                      label="Name"
+                      placeholder="Enter your name"
+                      required
+                      autoComplete="name"
+                      maxLength={90}
+                    />
+
+                    <TextInput
+                      id="email"
+                      name="email"
+                      label="Email"
+                      placeholder="Enter your email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      maxLength={120}
+                    />
+
+                    <TextInput
+                      id="phone"
+                      name="phone"
+                      label="Cell / WhatsApp"
+                      placeholder="Enter your number"
+                      type="tel"
+                      autoComplete="tel"
+                      maxLength={40}
+                    />
+
+                    <TextInput
+                      id="organization"
+                      name="organization"
+                      label="Organization, brand, or venue"
+                      placeholder="Optional"
+                      autoComplete="organization"
+                      maxLength={120}
+                    />
+
+                    <div className="md:col-span-2">
+                      <TextInput
+                        id="dateOrTiming"
+                        name="dateOrTiming"
+                        label="Preferred date or timing"
+                        placeholder="Example: weekend evening, next month, private dinner"
+                        maxLength={140}
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <FieldLabel htmlFor="message" required>
+                        Message
+                      </FieldLabel>
+
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={5}
+                        required
+                        maxLength={1200}
+                        placeholder={`Tell us how you would like to connect with ${profile.name}`}
+                        className="mt-2 w-full resize-none rounded-[1.3rem] border border-black/15 bg-white p-4 text-sm font-semibold leading-7 text-black outline-none transition placeholder:text-black/32 focus:border-[var(--ft-denim)] focus:ring-2 focus:ring-[var(--ft-denim)]/20"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--ft-denim)] px-6 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[var(--ft-pomodori)] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[var(--ft-citrine)] sm:w-auto"
+                  >
+                    Send my request
+                    <span>→</span>
+                  </button>
+
+                  <p className="mt-4 text-sm font-semibold leading-7 text-black/48">
+                    {sent
+                      ? "Your email app should open with the request ready to send."
+                      : "Fields marked with an asterisk are required."}
+                  </p>
+                </form>
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </ModalPortal>
   );
 }
 
@@ -707,37 +723,39 @@ function MenuModal({
   onClose: () => void;
 }) {
   return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
-          className="fixed inset-0 z-[90] overflow-y-auto bg-black/50 px-4 py-6 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${profile.name} menu`}
-          onClick={onClose}
-        >
-          <ModalCloseButton onClose={onClose} label="Close menu" />
+    <ModalPortal>
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            className="fixed inset-0 z-[2147483646] overflow-y-auto overscroll-contain bg-black/76 px-4 py-6 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${profile.name} menu`}
+            onClick={onClose}
+          >
+            <ModalCloseButton onClose={onClose} label="Close menu" />
 
-          <div className="mx-auto flex min-h-full max-w-5xl items-center justify-center py-10">
-            <motion.div
-              initial={{ opacity: 0, y: 22, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              transition={{ duration: 0.28 }}
-              className="relative w-full"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <div className="flex justify-center">
-                <MenuArtwork profile={profile} large />
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
+            <div className="mx-auto flex min-h-dvh max-w-5xl items-center justify-center py-14">
+              <motion.div
+                initial={{ opacity: 0, y: 22, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.28 }}
+                className="relative w-full"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="flex justify-center">
+                  <MenuArtwork profile={profile} large />
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </ModalPortal>
   );
 }
 
@@ -842,6 +860,19 @@ export default function FoodCharacterProfilePage() {
     };
   }, [category, slug]);
 
+  useEffect(() => {
+    if (!connectionOpen && !menuOpen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [connectionOpen, menuOpen]);
+
   if (loadingProfile && !profile) {
     return <LoadingProfile />;
   }
@@ -859,12 +890,14 @@ export default function FoodCharacterProfilePage() {
   const hasExperienceFormats =
     profile.cuisineStyleFormat.length > 0 || profile.collaborationTypes.length > 0;
 
+  const hasRealMenuSection = profile.menu.sections.some(
+    (section) => section.title || section.items.length > 0
+  );
+
   const hasMenu =
-    Boolean(profile.menu.title) ||
     Boolean(profile.menu.subtitle) ||
-    Boolean(profile.menu.currency) ||
     Boolean(profile.menu.note) ||
-    profile.menu.sections.length > 0;
+    hasRealMenuSection;
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-white">
@@ -907,23 +940,27 @@ export default function FoodCharacterProfilePage() {
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_460px] lg:items-end">
             <div>
-              <p
-                className="text-xs font-black uppercase tracking-[0.24em]"
-                style={{ color: profile.accentColor }}
-              >
-                {profile.role}
-              </p>
+              {profile.role ? (
+                <p
+                  className="text-xs font-black uppercase tracking-[0.24em]"
+                  style={{ color: profile.accentColor }}
+                >
+                  {profile.role}
+                </p>
+              ) : null}
 
               <h1 className="ft-display mt-4 max-w-5xl text-[clamp(3.4rem,8vw,8rem)] leading-[0.88] tracking-[0.002em]">
                 {profile.name}
               </h1>
 
-              <p
-                className="mt-7 max-w-3xl border-l-4 pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10"
-                style={{ borderColor: profile.accentColor }}
-              >
-                {profile.shortIntro}
-              </p>
+              {profile.shortIntro ? (
+                <p
+                  className="mt-7 max-w-3xl border-l-4 pl-5 text-lg font-semibold leading-9 text-black/72 sm:text-xl sm:leading-10"
+                  style={{ borderColor: profile.accentColor }}
+                >
+                  {profile.shortIntro}
+                </p>
+              ) : null}
 
               <ProfileSnapshot profile={profile} />
 
@@ -950,9 +987,11 @@ export default function FoodCharacterProfilePage() {
                 The person behind the table.
               </h2>
 
-              <p className="mt-7 max-w-2xl text-base font-semibold leading-8 text-black/66 sm:text-lg sm:leading-9">
-                {profile.bio}
-              </p>
+              {profile.bio ? (
+                <p className="mt-7 max-w-2xl text-base font-semibold leading-8 text-black/66 sm:text-lg sm:leading-9">
+                  {profile.bio}
+                </p>
+              ) : null}
 
               {socialLinks.length ? (
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -1006,15 +1045,23 @@ export default function FoodCharacterProfilePage() {
                         key={experience.id}
                         className="rounded-[1.4rem] border border-black/10 bg-[#fffdf8] p-4"
                       >
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-black/42">
-                          {experience.format}
-                        </p>
-                        <h3 className="ft-display mt-3 text-[clamp(2rem,4vw,3.2rem)] leading-[0.98]">
-                          {experience.title}
-                        </h3>
-                        <p className="mt-3 text-sm font-semibold leading-7 text-black/62">
-                          {experience.description}
-                        </p>
+                        {experience.format ? (
+                          <p className="text-xs font-black uppercase tracking-[0.18em] text-black/42">
+                            {experience.format}
+                          </p>
+                        ) : null}
+
+                        {experience.title ? (
+                          <h3 className="ft-display mt-3 text-[clamp(2rem,4vw,3.2rem)] leading-[0.98]">
+                            {experience.title}
+                          </h3>
+                        ) : null}
+
+                        {experience.description ? (
+                          <p className="mt-3 text-sm font-semibold leading-7 text-black/62">
+                            {experience.description}
+                          </p>
+                        ) : null}
                       </div>
                     ))}
                   </div>

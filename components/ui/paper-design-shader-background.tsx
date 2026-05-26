@@ -9,14 +9,14 @@ export function GradientBackground() {
         style={{ height: "100%", width: "100%" }}
         colorBack="#fffdf8"
         softness={0.78}
-        intensity={0.48}
+        intensity={0.5}
         noise={0.06}
         shape="corners"
         offsetX={0}
         offsetY={0}
         scale={1.05}
-        rotation={0}
-        speed={1.8}
+        rotation={5}
+        speed={1.2}
         colors={[
           "#ee542e",
           "#efd11e",
