@@ -190,6 +190,19 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-white/86 backdrop-blur-2xl">
       <nav className="ft-container relative grid h-20 grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[minmax(8rem,1fr)_auto_minmax(8rem,1fr)] lg:gap-4">
@@ -288,9 +301,22 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -14 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="border-t border-black/10 bg-white px-4 pb-5 lg:hidden"
+            className="fixed inset-x-0 bottom-0 top-20 z-40 overflow-y-auto border-t border-black/10 bg-white/96 px-4 backdrop-blur-2xl lg:hidden"
           >
-            <div className="mx-auto flex max-w-xl flex-col gap-2 pt-4">
+            <div className="mx-auto flex max-w-xl flex-col gap-3 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {actionNavItems.map((item) => (
+                  <Link
+                    key={`${item.label}-${item.href}`}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className="rounded-[1.35rem] border border-black/10 bg-[var(--ft-citrine)] px-5 py-4 text-center text-base font-extrabold text-black transition duration-300 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+
               {mainNavItems.map((item) =>
                 item.hasCharacterDropdown ? (
                   <div
@@ -305,13 +331,13 @@ export function Navbar() {
                       {item.label}
                     </Link>
 
-                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <div className="mt-2 grid gap-2">
                       {characterNavItems.map((character) => (
                         <Link
                           key={character.href}
                           href={character.href}
                           onClick={closeMenu}
-                          className={`rounded-[1.25rem] border border-black/10 bg-white px-4 py-4 transition duration-300 active:scale-[0.98] ${character.hoverClass}`}
+                          className={`rounded-[1.25rem] border border-black/10 bg-white px-4 py-3.5 transition duration-300 active:scale-[0.98] ${character.hoverClass}`}
                         >
                           <span className="flex items-start gap-3">
                             <span
@@ -342,19 +368,6 @@ export function Navbar() {
                   </Link>
                 )
               )}
-
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {actionNavItems.map((item) => (
-                  <Link
-                    key={`${item.label}-${item.href}`}
-                    href={item.href}
-                    onClick={closeMenu}
-                    className="rounded-[1.35rem] border border-black/10 bg-[var(--ft-citrine)] px-5 py-4 text-center text-base font-extrabold text-black transition duration-300 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
             </div>
           </motion.div>
         ) : null}

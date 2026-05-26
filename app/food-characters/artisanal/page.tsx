@@ -15,7 +15,7 @@ import { getFeaturedFoodCharacterProfilesByCategoryFromSanity } from "@/lib/sani
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-  guestJourney: "/media/food-characters/3-photo.jpg",
+  guestJourney: "/media/food-characters/artisanal/artisanal-page-graphic.png",
 };
 
 const artisanalCategory = getFoodCharacterCategory("artisanal");
