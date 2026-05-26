@@ -98,7 +98,7 @@ function CharacterDropdown({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -8, scale: 0.98 }}
           transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute left-1/2 top-full z-50 w-[620px] -translate-x-1/2 pt-4"
+          className="absolute left-1/2 top-full z-[70] w-[620px] -translate-x-1/2 pt-4"
           role="menu"
           aria-label="Food Characters"
         >
@@ -144,6 +144,85 @@ function CharacterDropdown({
         </motion.div>
       ) : null}
     </AnimatePresence>
+  );
+}
+
+function MobileMenu({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -14 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -14 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-x-0 bottom-0 top-20 z-[45] overflow-y-auto border-t border-black/10 bg-white px-4 lg:hidden"
+    >
+      <div className="mx-auto flex max-w-xl flex-col gap-3 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5">
+        <div className="grid gap-2">
+          {actionNavItems.map((item) => (
+            <Link
+              key={`${item.label}-${item.href}`}
+              href={item.href}
+              onClick={onClose}
+              className="rounded-[1.35rem] border border-black/10 bg-[var(--ft-citrine)] px-5 py-4 text-center text-base font-extrabold text-black transition duration-300 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        {mainNavItems.map((item) =>
+          item.hasCharacterDropdown ? (
+            <div
+              key={item.href}
+              className="rounded-[1.6rem] border border-black/10 bg-white p-2"
+            >
+              <Link
+                href={item.href}
+                onClick={onClose}
+                className={`block rounded-[1.25rem] px-5 py-4 text-base font-extrabold text-black transition duration-300 ${item.hoverClass}`}
+              >
+                {item.label}
+              </Link>
+
+              <div className="mt-2 grid gap-2">
+                {characterNavItems.map((character) => (
+                  <Link
+                    key={character.href}
+                    href={character.href}
+                    onClick={onClose}
+                    className={`rounded-[1.25rem] border border-black/10 bg-white px-4 py-3.5 transition duration-300 active:scale-[0.98] ${character.hoverClass}`}
+                  >
+                    <span className="flex items-start gap-3">
+                      <span
+                        className={`mt-1 h-3.5 w-3.5 shrink-0 rounded-full ${character.dotClass}`}
+                        aria-hidden="true"
+                      />
+                      <span>
+                        <span className="block text-sm font-black text-black">
+                          {character.label}
+                        </span>
+                        <span className="mt-1 block text-xs font-semibold leading-5 text-black/56">
+                          {character.description}
+                        </span>
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={`rounded-[1.35rem] border border-black/10 bg-white px-5 py-4 text-base font-extrabold text-black transition duration-300 ${item.hoverClass}`}
+            >
+              {item.label}
+            </Link>
+          )
+        )}
+      </div>
+    </motion.div>
   );
 }
 
@@ -204,174 +283,101 @@ export function Navbar() {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-black/10 bg-white/86 backdrop-blur-2xl">
-      <nav className="ft-container relative grid h-20 grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[minmax(8rem,1fr)_auto_minmax(8rem,1fr)] lg:gap-4">
-        <Link
-          href="/"
-          className="group flex shrink-0 items-center justify-self-start ft-focus-ring"
-          aria-label="Food Theatre home"
-          onClick={closeMenu}
-        >
-          <Image
-            src="/brand/foodtheatre-logo.png"
-            alt="Food Theatre logo"
-            width={104}
-            height={104}
-            priority
-            className="h-16 w-16 object-contain transition duration-300 group-hover:scale-105 sm:h-[4.45rem] sm:w-[4.45rem]"
-          />
-        </Link>
-
-        <div className="hidden justify-self-center lg:col-start-2 lg:flex">
-          <div className="flex h-[3.25rem] items-center gap-1 rounded-full border border-black/10 bg-white/76 p-1.5 backdrop-blur-xl">
-            {mainNavItems.map((item) =>
-              item.hasCharacterDropdown ? (
-                <div
-                  key={item.href}
-                  className="relative flex"
-                  onMouseEnter={openCharacterDropdown}
-                  onMouseLeave={closeCharacterDropdown}
-                  onFocus={openCharacterDropdown}
-                  onBlur={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget)) {
-                      closeCharacterDropdown();
-                    }
-                  }}
-                >
-                  <Link
-                    href={item.href}
-                    aria-haspopup="menu"
-                    aria-expanded={isCharacterDropdownOpen}
-                    onClick={closeMenu}
-                    className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
-                  >
-                    {item.label}
-                  </Link>
-
-                  <CharacterDropdown
-                    open={isCharacterDropdownOpen}
-                    onItemClick={closeMenu}
-                  />
-                </div>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenu}
-                  className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
-                >
-                  {item.label}
-                </Link>
-              )
-            )}
-          </div>
-        </div>
-
-        <div className="hidden items-center justify-end gap-2 justify-self-end xl:flex">
-          {actionNavItems.map((item) => (
-            <Link
-              key={`${item.label}-${item.href}`}
-              href={item.href}
-              onClick={closeMenu}
-              className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-black/10 bg-[var(--ft-citrine)] px-5 text-sm font-extrabold text-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            setIsOpen((value) => !value);
-            closeCharacterDropdown();
-          }}
-          className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full border border-black/10 bg-white ft-soft-shadow ft-focus-ring lg:hidden"
-          aria-label="Toggle navigation menu"
-          aria-expanded={isOpen}
-        >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </nav>
-
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
-            initial={{ opacity: 0, y: -14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-0 bottom-0 top-20 z-40 overflow-y-auto border-t border-black/10 bg-white/96 px-4 backdrop-blur-2xl lg:hidden"
+    <>
+      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/86 backdrop-blur-2xl">
+        <nav className="ft-container relative grid h-20 grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[minmax(8rem,1fr)_auto_minmax(8rem,1fr)] lg:gap-4">
+          <Link
+            href="/"
+            className="group flex shrink-0 items-center justify-self-start ft-focus-ring"
+            aria-label="Food Theatre home"
+            onClick={closeMenu}
           >
-            <div className="mx-auto flex max-w-xl flex-col gap-3 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5">
-              <div className="grid gap-2 sm:grid-cols-2">
-                {actionNavItems.map((item) => (
-                  <Link
-                    key={`${item.label}-${item.href}`}
-                    href={item.href}
-                    onClick={closeMenu}
-                    className="rounded-[1.35rem] border border-black/10 bg-[var(--ft-citrine)] px-5 py-4 text-center text-base font-extrabold text-black transition duration-300 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+            <Image
+              src="/brand/foodtheatre-logo.png"
+              alt="Food Theatre logo"
+              width={104}
+              height={104}
+              priority
+              className="h-16 w-16 object-contain transition duration-300 group-hover:scale-105 sm:h-[4.45rem] sm:w-[4.45rem]"
+            />
+          </Link>
 
+          <div className="hidden justify-self-center lg:col-start-2 lg:flex">
+            <div className="flex h-[3.25rem] items-center gap-1 rounded-full border border-black/10 bg-white/76 p-1.5 backdrop-blur-xl">
               {mainNavItems.map((item) =>
                 item.hasCharacterDropdown ? (
                   <div
                     key={item.href}
-                    className="rounded-[1.6rem] border border-black/10 bg-white p-2"
+                    className="relative flex"
+                    onMouseEnter={openCharacterDropdown}
+                    onMouseLeave={closeCharacterDropdown}
+                    onFocus={openCharacterDropdown}
+                    onBlur={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget)) {
+                        closeCharacterDropdown();
+                      }
+                    }}
                   >
                     <Link
                       href={item.href}
+                      aria-haspopup="menu"
+                      aria-expanded={isCharacterDropdownOpen}
                       onClick={closeMenu}
-                      className={`block rounded-[1.25rem] px-5 py-4 text-base font-extrabold text-black transition duration-300 ${item.hoverClass}`}
+                      className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
                     >
                       {item.label}
                     </Link>
 
-                    <div className="mt-2 grid gap-2">
-                      {characterNavItems.map((character) => (
-                        <Link
-                          key={character.href}
-                          href={character.href}
-                          onClick={closeMenu}
-                          className={`rounded-[1.25rem] border border-black/10 bg-white px-4 py-3.5 transition duration-300 active:scale-[0.98] ${character.hoverClass}`}
-                        >
-                          <span className="flex items-start gap-3">
-                            <span
-                              className={`mt-1 h-3.5 w-3.5 shrink-0 rounded-full ${character.dotClass}`}
-                              aria-hidden="true"
-                            />
-                            <span>
-                              <span className="block text-sm font-black text-black">
-                                {character.label}
-                              </span>
-                              <span className="mt-1 block text-xs font-semibold leading-5 text-black/56">
-                                {character.description}
-                              </span>
-                            </span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
+                    <CharacterDropdown
+                      open={isCharacterDropdownOpen}
+                      onItemClick={closeMenu}
+                    />
                   </div>
                 ) : (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={closeMenu}
-                    className={`rounded-[1.35rem] border border-black/10 bg-white px-5 py-4 text-base font-extrabold text-black transition duration-300 ${item.hoverClass}`}
+                    className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-sm font-extrabold text-black/66 transition duration-300 hover:-translate-y-0.5 xl:px-5 ${item.hoverClass}`}
                   >
                     {item.label}
                   </Link>
                 )
               )}
             </div>
-          </motion.div>
-        ) : null}
+          </div>
+
+          <div className="hidden items-center justify-end gap-2 justify-self-end xl:flex">
+            {actionNavItems.map((item) => (
+              <Link
+                key={`${item.label}-${item.href}`}
+                href={item.href}
+                onClick={closeMenu}
+                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-black/10 bg-[var(--ft-citrine)] px-5 text-sm font-extrabold text-black transition duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:bg-[var(--ft-menta)] hover:text-white active:bg-[var(--ft-denim)] active:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpen((value) => !value);
+              closeCharacterDropdown();
+            }}
+            className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full border border-black/10 bg-white ft-soft-shadow ft-focus-ring lg:hidden"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </nav>
+      </header>
+
+      <AnimatePresence>
+        {isOpen ? <MobileMenu onClose={closeMenu} /> : null}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
