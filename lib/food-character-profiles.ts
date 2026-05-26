@@ -59,45 +59,19 @@ export type FoodCharacterProfile = {
   availability: string;
   relocation: string;
 
-  /**
-   * Normal profile image used on the individual character page.
-   * Recommended: square or near-portrait JPG/WebP/PNG, not transparent cutout.
-   */
   portraitImage: string;
   portraitImageAlt: string;
 
-  /**
-   * Transparent PNG used only for stylized category/poster cards.
-   */
   cutoutImage: string;
   cutoutImageAlt: string;
 
-  /**
-   * Immersive hero/atmosphere image.
-   * Can temporarily be the same as portraitImage.
-   */
   heroImage: string;
   heroImageAlt: string;
 
-  /**
-   * Short visual headline shown on category cards.
-   * Example: "Food Story", "Visual Table", "Maker Table".
-   */
   cardHeadline: string;
-
   cardShape: FoodCharacterCardShape;
-
-  /**
-   * Temporary local design placement for the poster-card cutout.
-   * Later, Sanity should not require editors to type Tailwind classes.
-   * A mapper can convert a Sanity placement token into this class string.
-   */
   cardImageBoxClassName: string;
 
-  /**
-   * For now these stay as CSS-compatible values.
-   * Later Sanity can store a color token or hex value and map it into this format.
-   */
   accentColor: string;
   accentSoftColor: string;
 
@@ -220,206 +194,11 @@ export const foodCharacterCategories: FoodCharacterCategory[] = [
   },
 ];
 
-export const foodCharacterProfiles: FoodCharacterProfile[] = [
-  {
-    id: "character-mira-dale",
-    category: "creators",
-    categoryLabel: "Creators",
-    slug: "mira-dale",
-    name: "Mira Dale",
-    role: "Food Storyteller",
-    city: "Bologna",
-    country: "Italy",
-    location: "Bologna, Italy",
-    availability:
-      "Available for selected tables, creator-led tastings, and hosted storytelling moments.",
-    relocation: "Open to travel for special Food Theatre experiences.",
-
-    portraitImage: "/media/food-characters/creators/mira-dale.jpg",
-    portraitImageAlt: "Mira Dale, Food Storyteller",
-
-    cutoutImage: "/media/food-characters/creators/mira-dale-cutout.png",
-    cutoutImageAlt: "Mira Dale cutout portrait",
-
-    heroImage: "/media/food-characters/creators/mira-dale.jpg",
-    heroImageAlt: "Mira Dale Food Theatre profile image",
-
-    cardHeadline: "Food Story",
-    cardShape: "circle",
-    cardImageBoxClassName: "right-0 bottom-[38px] h-[236px] w-[168px]",
-
-    accentColor: "var(--ft-citrine)",
-    accentSoftColor: "rgba(239, 209, 30, 0.18)",
-
-    shortIntro:
-      "Mira turns food into a visual story guests can taste, follow, and remember.",
-    bio:
-      "Mira Dale is a food storyteller based in Bologna, shaping dining moments around colour, table atmosphere, hosting rhythm, and the emotional memory of food. Her work sits between food culture, visual presentation, and guest experience, making each table feel personal without becoming formal or distant.",
-
-    instagram: "https://instagram.com/",
-    website: "https://foodtheatre.com/",
-    facebook: "https://facebook.com/",
-
-    cuisineStyleFormat: [
-      "Italian-inspired",
-      "Visual storytelling",
-      "Styled table",
-      "Creator-led tasting",
-      "Hosted storytelling",
-    ],
-
-    collaborationTypes: [
-      "Pop-up",
-      "Special events",
-      "3 times a week",
-      "Private table",
-    ],
-
-    bringsToTable: [
-      "Visual food storytelling for intimate and social tables.",
-      "Warm hosting that helps guests understand the idea behind each plate.",
-      "Table styling, mood, and story-led presentation.",
-      "Creator-friendly formats for content, food culture, and shared moments.",
-    ],
-
-    connectedExperiences: [
-      {
-        id: "story-table",
-        title: "Story Table",
-        format: "Creator-led tasting",
-        description:
-          "A guided food moment where guests discover plates through story, atmosphere, and visual detail.",
-      },
-      {
-        id: "visual-tasting",
-        title: "Visual Tasting",
-        format: "Hosted table",
-        description:
-          "A colourful tasting format designed for guests who enjoy food, design, and conversation together.",
-      },
-    ],
-
-    menu: {
-      title: "Mira Dale Table Menu",
-      subtitle: "A visual food story shaped for Food Theatre guests",
-      currency: "EUR",
-      note:
-        "Menu items, prices, and availability may change depending on the date, format, ingredients, and Food Theatre experience.",
-      sections: [
-        {
-          id: "opening",
-          title: "Opening",
-          items: [
-            {
-              id: "seasonal-welcome-bite",
-              name: "Seasonal Welcome Bite",
-              description:
-                "A small seasonal bite designed to introduce Mira’s colour-led table mood.",
-              price: "€7",
-              image:
-                "/media/food-characters/menus/mira-dale/seasonal-welcome-bite.png",
-              imageAlt: "Seasonal welcome bite",
-              dietaryTags: ["Seasonal", "Small plate"],
-            },
-            {
-              id: "herb-oil-focaccia",
-              name: "Herb Oil Focaccia",
-              description:
-                "Soft focaccia served with aromatic herb oil and a bright table garnish.",
-              price: "€9",
-              image:
-                "/media/food-characters/menus/mira-dale/herb-oil-focaccia.png",
-              imageAlt: "Herb oil focaccia",
-              dietaryTags: ["Vegetarian", "Sharing"],
-            },
-            {
-              id: "citrus-table-spritz",
-              name: "Citrus Table Spritz",
-              description:
-                "A fresh citrus drink prepared as a visual opening ritual for the table.",
-              price: "€6",
-              image:
-                "/media/food-characters/menus/mira-dale/citrus-table-spritz.png",
-              imageAlt: "Citrus table spritz",
-              dietaryTags: ["Drink", "Fresh"],
-            },
-          ],
-        },
-        {
-          id: "table-story",
-          title: "Table Story",
-          items: [
-            {
-              id: "colour-led-vegetable-plate",
-              name: "Colour-Led Vegetable Plate",
-              description:
-                "A plated vegetable composition shaped around colour, freshness, and visual rhythm.",
-              price: "€16",
-              image:
-                "/media/food-characters/menus/mira-dale/colour-led-vegetable-plate.png",
-              imageAlt: "Colour-led vegetable plate",
-              dietaryTags: ["Vegetarian", "Signature"],
-            },
-            {
-              id: "fresh-cheese-fruit-grain",
-              name: "Fresh Cheese, Fruit, and Toasted Grain",
-              description:
-                "Creamy cheese, seasonal fruit, and toasted grain arranged as a soft visual tasting.",
-              price: "€14",
-              image:
-                "/media/food-characters/menus/mira-dale/fresh-cheese-fruit-grain.png",
-              imageAlt: "Fresh cheese, fruit, and toasted grain",
-              dietaryTags: ["Vegetarian", "Table story"],
-            },
-            {
-              id: "shared-pasta-garden-herbs",
-              name: "Shared Pasta With Garden Herbs",
-              description:
-                "A generous shared pasta dish with garden herbs and a warm hosted-table feeling.",
-              price: "€19",
-              image:
-                "/media/food-characters/menus/mira-dale/shared-pasta-garden-herbs.png",
-              imageAlt: "Shared pasta with garden herbs",
-              dietaryTags: ["Sharing", "Italian-inspired"],
-            },
-          ],
-        },
-        {
-          id: "sweet-finish",
-          title: "Sweet Finish",
-          items: [
-            {
-              id: "soft-cream-roasted-fruit",
-              name: "Soft Cream, Roasted Fruit, and Edible Flowers",
-              description:
-                "A gentle dessert plate with roasted fruit, soft cream, and floral colour.",
-              price: "€11",
-              image:
-                "/media/food-characters/menus/mira-dale/soft-cream-roasted-fruit.png",
-              imageAlt: "Soft cream, roasted fruit, and edible flowers",
-              dietaryTags: ["Dessert", "Visual"],
-            },
-            {
-              id: "small-closing-biscuit",
-              name: "Small Closing Biscuit",
-              description:
-                "A small final sweet bite served as a closing gesture for the table.",
-              price: "€4",
-              image:
-                "/media/food-characters/menus/mira-dale/small-closing-biscuit.png",
-              imageAlt: "Small closing biscuit",
-              dietaryTags: ["Dessert", "Small bite"],
-            },
-          ],
-        },
-      ],
-    },
-
-    sortOrder: 1,
-    isFeatured: true,
-    isPublished: true,
-  },
-];
+/**
+ * Sanity is now the source of truth for character profiles.
+ * Keep this array empty. Do not add local/mock characters here.
+ */
+export const foodCharacterProfiles: FoodCharacterProfile[] = [];
 
 export function isFoodCharacterCategorySlug(
   value: string
@@ -427,7 +206,9 @@ export function isFoodCharacterCategorySlug(
   return foodCharacterCategories.some((category) => category.slug === value);
 }
 
-export function getFoodCharacterProfileUrl(profile: FoodCharacterProfile) {
+export function getFoodCharacterProfileUrl(
+  profile: Pick<FoodCharacterProfile, "category" | "slug">
+) {
   return `/food-characters/${profile.category}/${profile.slug}`;
 }
 
@@ -450,24 +231,23 @@ export function getFoodCharacterCategory(category: string) {
   );
 }
 
+/**
+ * Legacy local-data helpers.
+ * These remain only so older imports do not break.
+ * They intentionally return no character data because Sanity now owns characters.
+ */
 export function getFoodCharacterProfiles() {
-  return [...foodCharacterProfiles]
-    .filter((profile) => profile.isPublished)
-    .sort((firstProfile, secondProfile) => firstProfile.sortOrder - secondProfile.sortOrder);
+  return [];
 }
 
-export function getFoodCharacterProfilesByCategory(category: string) {
-  return getFoodCharacterProfiles().filter((profile) => profile.category === category);
+export function getFoodCharacterProfilesByCategory(_category: string) {
+  return [];
 }
 
-export function getFeaturedFoodCharacterProfilesByCategory(category: string) {
-  return getFoodCharacterProfilesByCategory(category).filter(
-    (profile) => profile.isFeatured
-  );
+export function getFeaturedFoodCharacterProfilesByCategory(_category: string) {
+  return [];
 }
 
-export function findFoodCharacterProfile(category: string, slug: string) {
-  return getFoodCharacterProfiles().find(
-    (profile) => profile.category === category && profile.slug === slug
-  );
+export function findFoodCharacterProfile(_category: string, _slug: string) {
+  return undefined;
 }
