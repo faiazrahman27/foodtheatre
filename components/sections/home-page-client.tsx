@@ -9,7 +9,7 @@ import { GradientBackground } from "@/components/ui/paper-design-shader-backgrou
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-  heroVideo: "/media/high-res-website-video.mp4",
+  heroVideo: "/media/high-res-website-video.webm",
 
   platformExperiences: "/media/home/platform-experiences.jpg",
   platformCharacters: "/media/home/platform-characters.jpg",
