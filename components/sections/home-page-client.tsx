@@ -9,7 +9,7 @@ import { GradientBackground } from "@/components/ui/paper-design-shader-backgrou
 
 const media = {
   logo: "/brand/foodtheatre-logo.png",
-  heroVideo: "/media/high-res-website-video.webm",
+  heroVideo: "/media/high-res-website-video.mp4",
 
   platformExperiences: "/media/home/platform-experiences.jpg",
   platformCharacters: "/media/home/platform-characters.jpg",
@@ -624,7 +624,7 @@ function TheatreLoopVideo() {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         aria-label="Food Theatre location atmosphere video"
       />
     </motion.div>
@@ -1217,7 +1217,7 @@ export function HomePageClient() {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             aria-label="Food Theatre culinary experience video"
           />
         </motion.div>
