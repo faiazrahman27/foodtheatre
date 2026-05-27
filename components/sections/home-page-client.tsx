@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { GradientBackground } from "@/components/ui/paper-design-shader-background";
@@ -609,24 +609,37 @@ function ImmersiveSquarePhoto({
 }
 
 function TheatreLoopVideo() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const isNearViewport = useInView(containerRef, {
+    margin: "360px 0px",
+    amount: 0.15
+  });
+
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0.92, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.24 }}
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
-      className="relative aspect-[4/3] w-full self-center overflow-hidden rounded-[2.2rem] bg-white"
+      className="relative aspect-[4/3] w-full self-center overflow-hidden rounded-[2.2rem] bg-[#fffdf8]"
     >
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        src={media.theatreLoopVideo}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="none"
-        aria-label="Food Theatre location atmosphere video"
-      />
+      <div className="absolute inset-0 bg-[var(--ft-viola)]/12" />
+      <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[var(--ft-citrine)]/50" />
+      <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-[var(--ft-denim)]/20" />
+
+      {isNearViewport ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          src={media.theatreLoopVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Food Theatre location atmosphere video"
+        />
+      ) : null}
     </motion.div>
   );
 }
@@ -1012,15 +1025,11 @@ function CalendarPreview() {
           const isSelected = day.inCurrentMonth && selectedDay === day.number;
 
           return (
-            <motion.button
+            <button
               key={`${day.inCurrentMonth ? "current" : "outside"}-${index}-${day.number}`}
               type="button"
               disabled={!day.inCurrentMonth}
               onClick={() => setSelectedDay(day.number)}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.22, delay: index * 0.006 }}
               className={`flex aspect-square min-w-0 flex-col justify-between overflow-hidden rounded-[1rem] border p-1.5 text-left font-black transition duration-300 sm:rounded-2xl sm:p-2 ${
                 day.inCurrentMonth
                   ? "bg-white text-black hover:border-black/24"
@@ -1047,7 +1056,7 @@ function CalendarPreview() {
               ) : (
                 <span />
               )}
-            </motion.button>
+            </button>
           );
         })}
       </div>
@@ -1204,12 +1213,7 @@ export function HomePageClient() {
   return (
     <main className="bg-white">
       <section className="relative isolate min-h-[calc(100svh-80px)] overflow-hidden bg-white">
-        <motion.div
-          initial={{ scale: 1.03 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 -z-30 bg-white"
-        >
+        <div className="absolute inset-0 -z-30 bg-white">
           <video
             className="h-full w-full object-cover opacity-100 contrast-[1.02] saturate-[1.08]"
             src={media.heroVideo}
@@ -1220,7 +1224,7 @@ export function HomePageClient() {
             preload="metadata"
             aria-label="Food Theatre culinary experience video"
           />
-        </motion.div>
+        </div>
 
         <div
           className="absolute inset-0 -z-20"
